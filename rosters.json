@@ -1,0 +1,224 @@
+{
+  "#GETGOT": [
+    {"name": "Malik Willis", "pos": "QB", "ros_ppg": 16.5},
+    {"name": "Tyler Allgeier", "pos": "RB", "ros_ppg": 10.5},
+    {"name": "Rachaad White", "pos": "RB", "ros_ppg": 13.0},
+    {"name": "Mike Washington Jr.", "pos": "RB", "ros_ppg": 9.5},
+    {"name": "Amon-Ra St. Brown", "pos": "WR", "ros_ppg": 19.5},
+    {"name": "CeeDee Lamb", "pos": "WR", "ros_ppg": 20.0},
+    {"name": "T.J. Hockenson", "pos": "TE", "ros_ppg": 12.5},
+    {"name": "Carnell Tate", "pos": "WR", "ros_ppg": 8.0},
+    {"name": "Wan'Dale Robinson", "pos": "WR", "ros_ppg": 11.0},
+    {"name": "Breece Hall", "pos": "RB", "ros_ppg": 17.5},
+    {"name": "Treylon Burks", "pos": "WR", "ros_ppg": 7.0},
+    {"name": "Tyler Warren", "pos": "TE", "ros_ppg": 10.0},
+    {"name": "Seth McGowan", "pos": "RB", "ros_ppg": 6.5},
+    {"name": "Tank Dell", "pos": "WR", "ros_ppg": 12.0},
+    {"name": "Terrance Ferguson", "pos": "TE", "ros_ppg": 6.0},
+    {"name": "J. Croskey-Merritt", "pos": "RB", "ros_ppg": 6.0},
+    {"name": "Kimani Vidal", "pos": "RB", "ros_ppg": 7.5}
+  ],
+  "Nico Suave": [
+    {"name": "Trevor Lawrence", "pos": "QB", "ros_ppg": 18.5},
+    {"name": "Zach Charbonnet", "pos": "RB", "ros_ppg": 11.5},
+    {"name": "Luther Burden III", "pos": "WR", "ros_ppg": 13.0},
+    {"name": "Chris Olave", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Emeka Egbuka", "pos": "WR", "ros_ppg": 13.5},
+    {"name": "Malachi Fields", "pos": "WR", "ros_ppg": 9.0},
+    {"name": "TreVeyon Henderson", "pos": "RB", "ros_ppg": 12.5},
+    {"name": "Chris Godwin Jr.", "pos": "WR", "ros_ppg": 13.0},
+    {"name": "Patrick Mahomes", "pos": "QB", "ros_ppg": 21.0},
+    {"name": "Travis Etienne Jr.", "pos": "RB", "ros_ppg": 14.0},
+    {"name": "Jeremiyah Love", "pos": "RB", "ros_ppg": 10.0}
+  ],
+  "Bill Belichick the Coach (BBC)": [
+    {"name": "Geno Smith", "pos": "QB", "ros_ppg": 17.5},
+    {"name": "Derrick Henry", "pos": "RB", "ros_ppg": 18.0},
+    {"name": "Bhayshul Tuten", "pos": "RB", "ros_ppg": 10.5},
+    {"name": "Jaxon Smith-Njigba", "pos": "WR", "ros_ppg": 16.5},
+    {"name": "Tetairoa McMillan", "pos": "WR", "ros_ppg": 14.0},
+    {"name": "Tucker Kraft", "pos": "TE", "ros_ppg": 11.5},
+    {"name": "Malik Washington", "pos": "WR", "ros_ppg": 8.5},
+    {"name": "Kyle Pitts Sr.", "pos": "TE", "ros_ppg": 11.0},
+    {"name": "Rome Odunze", "pos": "WR", "ros_ppg": 12.5},
+    {"name": "C.J. Stroud", "pos": "QB", "ros_ppg": 19.0},
+    {"name": "Woody Marks", "pos": "RB", "ros_ppg": 9.0},
+    {"name": "Justice Hill", "pos": "RB", "ros_ppg": 8.0}
+  ],
+  "Kappamino": [
+    {"name": "Caleb Williams", "pos": "QB", "ros_ppg": 18.0},
+    {"name": "Kyren Williams", "pos": "RB", "ros_ppg": 16.5},
+    {"name": "Quinshon Judkins", "pos": "RB", "ros_ppg": 13.0},
+    {"name": "Puka Nacua", "pos": "WR", "ros_ppg": 17.5},
+    {"name": "Jameson Williams", "pos": "WR", "ros_ppg": 13.5},
+    {"name": "Colston Loveland", "pos": "TE", "ros_ppg": 10.5},
+    {"name": "Omar Cooper Jr.", "pos": "WR", "ros_ppg": 8.5},
+    {"name": "Devin Singletary", "pos": "RB", "ros_ppg": 10.0},
+    {"name": "Ryan Flournoy", "pos": "WR", "ros_ppg": 7.0},
+    {"name": "Matthew Stafford", "pos": "QB", "ros_ppg": 17.0},
+    {"name": "Dylan Sampson", "pos": "RB", "ros_ppg": 9.5},
+    {"name": "Mack Hollins", "pos": "WR", "ros_ppg": 7.5},
+    {"name": "James Conner", "pos": "RB", "ros_ppg": 14.0}
+  ],
+  "I was Bourne Brown": [
+    {"name": "Tyler Shough", "pos": "QB", "ros_ppg": 15.0},
+    {"name": "Chase Brown", "pos": "RB", "ros_ppg": 14.0},
+    {"name": "Kendre Miller", "pos": "RB", "ros_ppg": 9.0},
+    {"name": "Zay Flowers", "pos": "WR", "ros_ppg": 15.0},
+    {"name": "Caleb Douglas", "pos": "WR", "ros_ppg": 8.0},
+    {"name": "Dallas Goedert", "pos": "TE", "ros_ppg": 11.5},
+    {"name": "Jordan Addison", "pos": "WR", "ros_ppg": 13.0},
+    {"name": "Juwan Johnson", "pos": "TE", "ros_ppg": 8.5},
+    {"name": "Kenny Gainwell", "pos": "RB", "ros_ppg": 7.5},
+    {"name": "Rico Dowdle", "pos": "RB", "ros_ppg": 11.0},
+    {"name": "Devaughn Vele", "pos": "WR", "ros_ppg": 8.0},
+    {"name": "Michael Mayer", "pos": "TE", "ros_ppg": 7.0},
+    {"name": "Demarcus Robinson", "pos": "WR", "ros_ppg": 9.0}
+  ],
+  "Dose of Dev": [
+    {"name": "Brock Purdy", "pos": "QB", "ros_ppg": 20.0},
+    {"name": "Aaron Jones Sr.", "pos": "RB", "ros_ppg": 14.5},
+    {"name": "Cam Skattebo", "pos": "RB", "ros_ppg": 12.0},
+    {"name": "Nico Collins", "pos": "WR", "ros_ppg": 17.5},
+    {"name": "DJ Moore", "pos": "WR", "ros_ppg": 14.0},
+    {"name": "Ja'Marr Chase", "pos": "WR", "ros_ppg": 19.0},
+    {"name": "Rashee Rice", "pos": "WR", "ros_ppg": 15.5},
+    {"name": "Antonio Williams", "pos": "WR", "ros_ppg": 8.5},
+    {"name": "Keaton Mitchell", "pos": "RB", "ros_ppg": 7.0},
+    {"name": "Brian Thomas Jr.", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Brandon Aiyuk", "pos": "WR", "ros_ppg": 15.0},
+    {"name": "RJ Harvey", "pos": "RB", "ros_ppg": 10.0}
+  ],
+  "Drake Gaye": [
+    {"name": "Drake Maye", "pos": "QB", "ros_ppg": 18.0},
+    {"name": "Kenneth Walker III", "pos": "RB", "ros_ppg": 15.5},
+    {"name": "Emmett Johnson", "pos": "RB", "ros_ppg": 9.0},
+    {"name": "Xavier Worthy", "pos": "WR", "ros_ppg": 13.0},
+    {"name": "Tee Higgins", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Brenton Strange", "pos": "TE", "ros_ppg": 8.0},
+    {"name": "Marvin Harrison Jr.", "pos": "WR", "ros_ppg": 16.0},
+    {"name": "Samaje Perine", "pos": "RB", "ros_ppg": 7.5},
+    {"name": "Emanuel Wilson", "pos": "RB", "ros_ppg": 7.0},
+    {"name": "Bam Knight", "pos": "RB", "ros_ppg": 6.5},
+    {"name": "Tre Tucker", "pos": "WR", "ros_ppg": 9.5},
+    {"name": "David Montgomery", "pos": "RB", "ros_ppg": 13.5},
+    {"name": "A.J. Brown", "pos": "WR", "ros_ppg": 17.5},
+    {"name": "De'Zhaun Stribling", "pos": "WR", "ros_ppg": 8.0}
+  ],
+  "BuddyBudz": [
+    {"name": "Joe Burrow", "pos": "QB", "ros_ppg": 21.5},
+    {"name": "Ashton Jeanty", "pos": "RB", "ros_ppg": 16.0},
+    {"name": "James Cook III", "pos": "RB", "ros_ppg": 15.0},
+    {"name": "Parker Washington", "pos": "WR", "ros_ppg": 9.0},
+    {"name": "Ladd McConkey", "pos": "WR", "ros_ppg": 13.5},
+    {"name": "Dalton Kincaid", "pos": "TE", "ros_ppg": 11.5},
+    {"name": "KC Concepcion Jr.", "pos": "WR", "ros_ppg": 10.5},
+    {"name": "Keenan Allen", "pos": "WR", "ros_ppg": 12.5},
+    {"name": "Jordan Love", "pos": "QB", "ros_ppg": 19.5},
+    {"name": "J.K. Dobbins", "pos": "RB", "ros_ppg": 13.5},
+    {"name": "Kyler Murray", "pos": "QB", "ros_ppg": 20.0}
+  ],
+  "Armaan": [
+    {"name": "Dak Prescott", "pos": "QB", "ros_ppg": 19.0},
+    {"name": "Jahmyr Gibbs", "pos": "RB", "ros_ppg": 17.0},
+    {"name": "Blake Corum", "pos": "RB", "ros_ppg": 9.5},
+    {"name": "George Pickens", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Denzel Boston", "pos": "WR", "ros_ppg": 10.0},
+    {"name": "Brock Bowers", "pos": "TE", "ros_ppg": 15.0},
+    {"name": "Ollie Gordon II", "pos": "RB", "ros_ppg": 12.0},
+    {"name": "Isaiah Likely", "pos": "TE", "ros_ppg": 9.5},
+    {"name": "DeMario Douglas", "pos": "WR", "ros_ppg": 10.5},
+    {"name": "Jaylen Warren", "pos": "RB", "ros_ppg": 10.0},
+    {"name": "J.J. McCarthy", "pos": "QB", "ros_ppg": 14.0},
+    {"name": "Greg Dulcich", "pos": "TE", "ros_ppg": 6.5},
+    {"name": "Roman Wilson", "pos": "WR", "ros_ppg": 7.5},
+    {"name": "Kaelon Black", "pos": "RB", "ros_ppg": 6.0}
+  ],
+  "FartFactory": [
+    {"name": "Josh Allen", "pos": "QB", "ros_ppg": 23.5},
+    {"name": "Josh Jacobs", "pos": "RB", "ros_ppg": 15.5},
+    {"name": "Jadarian Price", "pos": "RB", "ros_ppg": 9.0},
+    {"name": "Justin Jefferson", "pos": "WR", "ros_ppg": 19.0},
+    {"name": "Makai Lemon", "pos": "WR", "ros_ppg": 9.5},
+    {"name": "Sam LaPorta", "pos": "TE", "ros_ppg": 13.0},
+    {"name": "Hunter Henry", "pos": "TE", "ros_ppg": 9.5},
+    {"name": "Khalil Shakir", "pos": "WR", "ros_ppg": 12.0},
+    {"name": "Mike Evans", "pos": "WR", "ros_ppg": 15.5},
+    {"name": "Alec Pierce", "pos": "WR", "ros_ppg": 10.0},
+    {"name": "Kyle Monangai", "pos": "RB", "ros_ppg": 9.0},
+    {"name": "Courtland Sutton", "pos": "WR", "ros_ppg": 13.0},
+    {"name": "Jordyn Tyson", "pos": "WR", "ros_ppg": 8.0}
+  ],
+  "Sicario": [
+    {"name": "Kirk Cousins", "pos": "QB", "ros_ppg": 16.5},
+    {"name": "Bijan Robinson", "pos": "RB", "ros_ppg": 17.5},
+    {"name": "Javonte Williams", "pos": "RB", "ros_ppg": 12.0},
+    {"name": "Christian Watson", "pos": "WR", "ros_ppg": 12.5},
+    {"name": "Travis Kelce", "pos": "TE", "ros_ppg": 13.5},
+    {"name": "D'Andre Swift", "pos": "RB", "ros_ppg": 13.0},
+    {"name": "Drake London", "pos": "WR", "ros_ppg": 15.5},
+    {"name": "Germie Bernard", "pos": "WR", "ros_ppg": 8.0},
+    {"name": "Josh Downs", "pos": "WR", "ros_ppg": 12.0},
+    {"name": "Jakobi Meyers", "pos": "WR", "ros_ppg": 12.5},
+    {"name": "Keon Coleman", "pos": "WR", "ros_ppg": 11.5},
+    {"name": "Lamar Jackson", "pos": "QB", "ros_ppg": 22.5}
+  ],
+  "Iceman": [
+    {"name": "Jared Goff", "pos": "QB", "ros_ppg": 18.5},
+    {"name": "Bucky Irving", "pos": "RB", "ros_ppg": 13.5},
+    {"name": "Saquon Barkley", "pos": "RB", "ros_ppg": 18.5},
+    {"name": "Stefon Diggs", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Braelon Allen", "pos": "RB", "ros_ppg": 9.5},
+    {"name": "Jalen Coker", "pos": "WR", "ros_ppg": 8.5},
+    {"name": "Dalton Schultz", "pos": "TE", "ros_ppg": 9.5},
+    {"name": "Garrett Wilson", "pos": "WR", "ros_ppg": 16.5},
+    {"name": "Austin Ekeler", "pos": "RB", "ros_ppg": 10.5},
+    {"name": "Harold Fannin Jr.", "pos": "TE", "ros_ppg": 9.0},
+    {"name": "DK Metcalf", "pos": "WR", "ros_ppg": 15.0},
+    {"name": "Tony Pollard", "pos": "RB", "ros_ppg": 12.5},
+    {"name": "Ty Johnson", "pos": "RB", "ros_ppg": 6.5}
+  ],
+  "DrSweettooth": [
+    {"name": "Michael Penix Jr.", "pos": "QB", "ros_ppg": 15.5},
+    {"name": "Jonathan Taylor", "pos": "RB", "ros_ppg": 16.5},
+    {"name": "Rhamondre Stevenson", "pos": "RB", "ros_ppg": 13.0},
+    {"name": "Michael Wilson", "pos": "WR", "ros_ppg": 10.5},
+    {"name": "Matthew Golden", "pos": "WR", "ros_ppg": 9.5},
+    {"name": "Trey McBride", "pos": "TE", "ros_ppg": 13.5},
+    {"name": "Mike Gesicki", "pos": "TE", "ros_ppg": 8.5},
+    {"name": "Quentin Johnston", "pos": "WR", "ros_ppg": 11.0},
+    {"name": "Mark Andrews", "pos": "TE", "ros_ppg": 11.0},
+    {"name": "Aaron Rodgers", "pos": "QB", "ros_ppg": 16.0},
+    {"name": "DeVonta Smith", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Alvin Kamara", "pos": "RB", "ros_ppg": 16.0},
+    {"name": "Davante Adams", "pos": "WR", "ros_ppg": 15.5}
+  ],
+  "DQ's Brotherhood": [
+    {"name": "Jayden Daniels", "pos": "QB", "ros_ppg": 21.0},
+    {"name": "Christian McCaffrey", "pos": "RB", "ros_ppg": 19.5},
+    {"name": "Chuba Hubbard", "pos": "RB", "ros_ppg": 14.0},
+    {"name": "Malik Nabers", "pos": "WR", "ros_ppg": 17.0},
+    {"name": "Jaylen Waddle", "pos": "WR", "ros_ppg": 13.5},
+    {"name": "George Kittle", "pos": "TE", "ros_ppg": 13.5},
+    {"name": "Jonah Coleman", "pos": "RB", "ros_ppg": 10.5},
+    {"name": "Omarion Hampton", "pos": "RB", "ros_ppg": 11.0},
+    {"name": "Jahan Dotson", "pos": "WR", "ros_ppg": 8.5},
+    {"name": "Jordan Mason", "pos": "RB", "ros_ppg": 11.5},
+    {"name": "Deebo Samuel Sr.", "pos": "WR", "ros_ppg": 14.0},
+    {"name": "Adonai Mitchell", "pos": "WR", "ros_ppg": 9.0}
+  ]
+}
+```[cite: 5, 6, 7, 8, 9, 10]
+
+---
+
+### How to Update Your Project
+
+1. Open `rosters.json` in your local project folder (`C:\Users\fmagh\yahoo-trade-analyzer\rosters.json`).
+2. Replace the contents of `rosters.json` with the JSON block above.
+3. Push the update to GitHub:
+
+```powershell
+git add rosters.json
+git commit -m "Import all 14 team rosters from Yahoo PDF"
+git push origin main
