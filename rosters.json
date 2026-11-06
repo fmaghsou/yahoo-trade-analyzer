@@ -208,17 +208,3 @@
     {"name": "Adonai Mitchell", "pos": "WR", "ros_ppg": 9.0}
   ]
 }
-```[cite: 5, 6, 7, 8, 9, 10]
-
----
-
-### How to Update Your Project
-
-1. Open `rosters.json` in your local project folder (`C:\Users\fmagh\yahoo-trade-analyzer\rosters.json`).
-2. Replace the contents of `rosters.json` with the JSON block above.
-3. Push the update to GitHub:
-
-```powershell
-git add rosters.json
-git commit -m "Import all 14 team rosters from Yahoo PDF"
-git push origin main
