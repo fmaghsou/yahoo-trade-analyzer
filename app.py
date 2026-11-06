@@ -1,9 +1,9 @@
 import json
-import pandas as pd
+import os
 import streamlit as st
 
 st.set_page_config(
-    page_title="FleeceGuard | Fantasy Trade Analyzer",
+    page_title="FleeceGuard | Fantasy Trade Arbitrator",
     page_icon="🛡️",
     layout="wide",
 )
@@ -11,98 +11,96 @@ st.set_page_config(
 st.title("🛡️ FleeceGuard")
 st.caption("Fantasy Trade Arbitrator & Lineup Optimizer")
 
-# --- 1. LEAGUE CONFIGURATION ---
-ROSTER_SLOTS = {"QB": 1, "RB": 2, "WR": 2, "TE": 1, "FLEX": 1}
-WAIVER_BASELINES = {"QB": 14.0, "RB": 7.5, "WR": 9.0, "TE": 6.5}
+# --- 1. LEAGUE ROSTER LAYOUT CONFIGURATION ---
+# Configured for: 1 QB, 2 RB, 2 WR, 1 TE, 2 W/R/T FLEX
+ROSTER_SLOTS = {"QB": 1, "RB": 2, "WR": 2, "TE": 1, "FLEX": 2}
 
-# Pre-loaded League Rosters (Initial template)
-DEFAULT_LEAGUE = {
-    "Team Alpha": [
-        {"name": "Patrick Mahomes", "pos": "QB", "ros_ppg": 19.5},
-        {"name": "Christian McCaffrey", "pos": "RB", "ros_ppg": 18.0},
-        {"name": "Derrick Henry", "pos": "RB", "ros_ppg": 15.2},
-        {"name": "CeeDee Lamb", "pos": "WR", "ros_ppg": 16.8},
-        {"name": "AJ Brown", "pos": "WR", "ros_ppg": 14.5},
-        {"name": "Travis Kelce", "pos": "TE", "ros_ppg": 12.0},
-        {"name": "Deebo Samuel", "pos": "WR", "ros_ppg": 11.8},
-        {"name": "Najee Harris", "pos": "RB", "ros_ppg": 10.2},
-    ],
-    "Team Bravo": [
-        {"name": "Josh Allen", "pos": "QB", "ros_ppg": 21.0},
-        {"name": "Breece Hall", "pos": "RB", "ros_ppg": 14.8},
-        {"name": "Kenneth Walker III", "pos": "RB", "ros_ppg": 13.5},
-        {"name": "Tyreek Hill", "pos": "WR", "ros_ppg": 16.0},
-        {"name": "Amon-Ra St. Brown", "pos": "WR", "ros_ppg": 15.5},
-        {"name": "Trey McBride", "pos": "TE", "ros_ppg": 11.5},
-        {"name": "Amari Cooper", "pos": "WR", "ros_ppg": 10.5},
-    ],
-    "Team Charlie": [
-        {"name": "Lamar Jackson", "pos": "QB", "ros_ppg": 20.5},
-        {"name": "Saquon Barkley", "pos": "RB", "ros_ppg": 16.2},
-        {"name": "Bijan Robinson", "pos": "RB", "ros_ppg": 15.8},
-        {"name": "Justin Jefferson", "pos": "WR", "ros_ppg": 17.2},
-        {"name": "Nico Collins", "pos": "WR", "ros_ppg": 14.0},
-        {"name": "George Kittle", "pos": "TE", "ros_ppg": 11.0},
-    ],
+# --- 2. HARDCODED CUSTOM LEAGUE SCORING RULES ---
+LEAGUE_SCORING_RULES = {
+    "completions": 0.25,
+    "incompletions": -0.25,
+    "passing_yards_per_point": 25.0,
+    "passing_td": 4.0,
+    "interceptions": -1.0,
+    "passing_bonuses": {275: 1.0, 375: 3.0, 450: 5.0},
+    "passing_td_40plus_bonus": 2.0,
+    "rushing_yards_per_point": 10.0,
+    "rushing_td": 6.0,
+    "rushing_bonuses": {75: 2.0, 100: 4.0, 150: 6.0},
+    "rushing_td_40plus_bonus": 2.0,
+    "receptions": 1.0,
+    "receiving_yards_per_point": 10.0,
+    "receiving_td": 6.0,
+    "receiving_bonuses": {75: 2.0, 100: 4.0},
+    "receiving_td_40plus_bonus": 2.0,
+    "fumbles_lost": -2.0,
+    "two_point_conversions": 2.0,
 }
 
-# Preserve edited rosters across user sessions
-if "league_rosters" not in st.session_state:
-    st.session_state.league_rosters = DEFAULT_LEAGUE
 
-# --- 2. SIDEBAR ROSTER IMPORTER & EDITOR ---
-with st.sidebar:
-    st.header("⚙️ Roster Manager")
-    st.write("View, edit, or import team rosters for your league.")
+# --- 3. LOAD CENTRAL ROSTERS FROM JSON ---
+@st.cache_data(ttl=60)
+def load_central_rosters():
+    if os.path.exists("rosters.json"):
+        try:
+            with open("rosters.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            st.error(f"Error reading rosters.json: {e}")
+            return {}
+    return {}
 
-    active_team = st.selectbox(
-        "Select Team to Edit", list(st.session_state.league_rosters.keys())
+
+league_rosters = load_central_rosters()
+
+if not league_rosters:
+    st.error(
+        "No roster data loaded. Please ensure `rosters.json` is committed to GitHub."
     )
+    st.stop()
 
-    with st.expander(f"📥 Paste / Update Roster for {active_team}"):
-        st.caption(
-            "Format per line: `Player Name, Position, PPG`\n\nExample:\n`Jalen Hurts, QB, 19.2`\n`Bucky Irving, RB, 12.1`"
-        )
-        pasted_text = st.text_area("Paste Players:", height=150)
-        if st.button("Apply Pasted Roster"):
-            new_players = []
-            lines = pasted_text.strip().split("\n")
-            for line in lines:
-                parts = [p.strip() for p in line.split(",") if p.strip()]
-                if len(parts) >= 3:
-                    try:
-                        new_players.append(
-                            {
-                                "name": parts[0],
-                                "pos": parts[1].upper(),
-                                "ros_ppg": float(parts[2]),
-                            }
-                        )
-                    except ValueError:
-                        pass
-            if new_players:
-                st.session_state.league_rosters[active_team] = new_players
-                st.success(
-                    f"Updated {active_team} with {len(new_players)} players!"
-                )
-                st.rerun()
+# --- 4. SIDEBAR LEAGUE SETTINGS ---
+st.sidebar.header("⚙️ League Settings")
 
-    # Display active roster table in sidebar
-    current_df = pd.DataFrame(st.session_state.league_rosters[active_team])
-    st.subheader(f"Current {active_team} Roster")
-    st.dataframe(current_df, use_container_width=True, hide_index=True)
+scoring_format = st.sidebar.selectbox(
+    "Scoring Preset",
+    ["Custom Bonus League (Default)", "Full PPR (1.0)", "Half PPR (0.5)"],
+    index=0,
+)
 
-    if st.button("🔄 Reset All Rosters to Default"):
-        st.session_state.league_rosters = DEFAULT_LEAGUE
-        st.rerun()
+BASELINES_BY_FORMAT = {
+    "Custom Bonus League (Default)": {
+        "QB": 18.5,
+        "RB": 9.5,
+        "WR": 10.5,
+        "TE": 7.0,
+    },
+    "Full PPR (1.0)": {"QB": 14.0, "RB": 8.0, "WR": 9.0, "TE": 6.5},
+    "Half PPR (0.5)": {"QB": 14.0, "RB": 7.0, "WR": 7.5, "TE": 5.5},
+}
 
-# --- 3. TRADE EVALUATION LOGIC ---
+WAIVER_BASELINES = BASELINES_BY_FORMAT[scoring_format]
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Active Starter Layout")
+st.sidebar.write("• 1 QB")
+st.sidebar.write("• 2 RB")
+st.sidebar.write("• 2 WR")
+st.sidebar.write("• 1 TE")
+st.sidebar.write("• **2 FLEX (W/R/T)**")
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Waiver Baseline Floors")
+st.sidebar.json(WAIVER_BASELINES)
+
+
+# --- 5. OPTIMAL LINEUP SOLVER ---
 def calculate_optimal_starting_ppg(roster_list):
     by_pos = {"QB": [], "RB": [], "WR": [], "TE": []}
     for p in roster_list:
-        pos = p["pos"]
+        pos = p.get("pos", "")
         if pos in by_pos:
-            by_pos[pos].append(p["ros_ppg"])
+            by_pos[pos].append(p.get("ros_ppg", 0.0))
 
     for pos in by_pos:
         by_pos[pos].sort(reverse=True)
@@ -116,10 +114,19 @@ def calculate_optimal_starting_ppg(roster_list):
         while len(starters) < slots:
             starters.append(WAIVER_BASELINES[pos])
         total_ppg += sum(starters)
-        flex_candidates.extend(by_pos[pos][slots:])
+
+        # Only RB, WR, TE bench players are eligible for W/R/T FLEX slots
+        if pos != "QB":
+            flex_candidates.extend(by_pos[pos][slots:])
 
     flex_slots = ROSTER_SLOTS.get("FLEX", 0)
     flex_candidates.sort(reverse=True)
+
+    while len(flex_candidates) < flex_slots:
+        flex_candidates.append(
+            (WAIVER_BASELINES["RB"] + WAIVER_BASELINES["WR"]) / 2.0
+        )
+
     total_ppg += sum(flex_candidates[:flex_slots])
 
     return round(total_ppg, 2)
@@ -155,20 +162,22 @@ def evaluate_trade(
     }
 
 
-# --- 4. MAIN APP UI ---
+# --- 6. MAIN TRADE UI ---
 st.subheader("1. Select Trading Teams")
 col1, col2 = st.columns(2)
 
-teams_list = list(st.session_state.league_rosters.keys())
+teams_list = list(league_rosters.keys())
 
 with col1:
     team_a_name = st.selectbox("Team A (Initiating)", teams_list, index=0)
 with col2:
     available_team_b = [t for t in teams_list if t != team_a_name]
-    team_b_name = st.selectbox("Team B (Target)", available_team_b, index=0)
+    team_b_name = st.selectbox(
+        "Team B (Target)", available_team_b, index=0 if available_team_b else 0
+    )
 
-team_a_roster = st.session_state.league_rosters[team_a_name]
-team_b_roster = st.session_state.league_rosters[team_b_name]
+team_a_roster = league_rosters[team_a_name]
+team_b_roster = league_rosters[team_b_name]
 
 st.subheader("2. Select Traded Players")
 t_col1, t_col2 = st.columns(2)
@@ -193,7 +202,9 @@ if st.button("🛡️ Run FleeceGuard Analysis", type="primary"):
         )
 
         st.markdown("---")
-        st.subheader("📊 FleeceGuard Verdict & Lineup Impact")
+        st.subheader(
+            f"📊 FleeceGuard Verdict & Lineup Impact ({scoring_format})"
+        )
 
         m1, m2 = st.columns(2)
         diff_a = results["team_a"]["diff"]
