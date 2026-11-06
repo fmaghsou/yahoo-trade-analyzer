@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 import streamlit as st
 
 st.set_page_config(
@@ -15,7 +15,7 @@ st.caption("Fantasy Trade Arbitrator & Lineup Optimizer")
 # Configured for: 1 QB, 2 RB, 2 WR, 1 TE, 2 W/R/T FLEX
 ROSTER_SLOTS = {"QB": 1, "RB": 2, "WR": 2, "TE": 1, "FLEX": 2}
 
-# --- 2. HARDCODED CUSTOM LEAGUE SCORING RULES ---
+# --- 2. HARDCODED CUSTOM LEAGUE SCORING RULES (SCHEMA / REFERENCE) ---
 LEAGUE_SCORING_RULES = {
     "completions": 0.25,
     "incompletions": -0.25,
@@ -41,9 +41,10 @@ LEAGUE_SCORING_RULES = {
 # --- 3. LOAD CENTRAL ROSTERS FROM JSON ---
 @st.cache_data(ttl=60)
 def load_central_rosters():
-    if os.path.exists("rosters.json"):
+    rosters_path = Path(__file__).parent / "rosters.json"
+    if rosters_path.exists():
         try:
-            with open("rosters.json", "r", encoding="utf-8") as f:
+            with open(rosters_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             st.error(f"Error reading rosters.json: {e}")
@@ -63,7 +64,7 @@ if not league_rosters:
 st.sidebar.header("⚙️ League Settings")
 
 scoring_format = st.sidebar.selectbox(
-    "Scoring Preset",
+    "Waiver Replacement Baseline",
     ["Custom Bonus League (Default)", "Full PPR (1.0)", "Half PPR (0.5)"],
     index=0,
 )
@@ -172,9 +173,7 @@ with col1:
     team_a_name = st.selectbox("Team A (Initiating)", teams_list, index=0)
 with col2:
     available_team_b = [t for t in teams_list if t != team_a_name]
-    team_b_name = st.selectbox(
-        "Team B (Target)", available_team_b, index=0 if available_team_b else 0
-    )
+    team_b_name = st.selectbox("Team B (Target)", available_team_b, index=0)
 
 team_a_roster = league_rosters[team_a_name]
 team_b_roster = league_rosters[team_b_name]
@@ -225,15 +224,26 @@ if st.button("🛡️ Run FleeceGuard Analysis", type="primary"):
 
         st.markdown("---")
         st.subheader("⚖️ League Veto / Collusion Guidance")
+
+        net_advantage = round(diff_a - diff_b, 2)
+        if net_advantage > 0:
+            winner_text = f"**{team_a_name}** gains a +{abs(net_advantage)} PPG net advantage over {team_b_name}."
+        elif net_advantage < 0:
+            winner_text = f"**{team_b_name}** gains a +{abs(net_advantage)} PPG net advantage over {team_a_name}."
+        else:
+            winner_text = "Both teams experience identical net point shifts."
+
         if diff_a >= -1.0 and diff_b >= -1.0:
             st.success(
-                "✅ **FAIR TRADE:** Both teams gain or suffer negligible starting point impact. No veto recommended."
+                f"✅ **FAIR TRADE:** Neither team suffers a starting lineup penalty. {winner_text} No veto recommended."
             )
         elif abs(diff_a - diff_b) > 7.0:
+            winner_team = team_a_name if diff_a > diff_b else team_b_name
+            loser_team = team_b_name if diff_a > diff_b else team_a_name
             st.error(
-                "🚨 **FLEECE ALERT:** Highly unbalanced starting lineup impact. Review closely before approving!"
+                f"🚨 **FLEECE ALERT:** Highly unbalanced starting lineup impact! **{winner_team}** gains a net advantage of +{abs(net_advantage)} PPG over **{loser_team}**. Review closely before approving!"
             )
         else:
             st.info(
-                "⚖️ **ACCEPTABLE MARGIN:** Minor scoring shift, likely balancing roster depth or positional needs."
+                f"⚖️ **ACCEPTABLE MARGIN:** Minor scoring shift. {winner_text} Likely balancing roster depth or positional needs."
             )
