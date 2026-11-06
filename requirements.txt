@@ -1,3 +1,2 @@
-"streamlit" | Out-File -Encoding ascii requirements.txt
-"pandas" | Out-File -Encoding ascii -Append requirements.txt
-"requests" | Out-File -Encoding ascii -Append requirements.txt
+pandas
+requests
