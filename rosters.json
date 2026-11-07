@@ -2,31 +2,31 @@
   "#GETGOT": [
     {"name": "Malik Willis", "pos": "QB", "ros_ppg": 16.5},
     {"name": "Tyler Allgeier", "pos": "RB", "ros_ppg": 10.5},
-    {"name": "Rachaad White", "pos": "RB", "ros_ppg": 13.0},
     {"name": "Mike Washington Jr.", "pos": "RB", "ros_ppg": 9.5},
     {"name": "Amon-Ra St. Brown", "pos": "WR", "ros_ppg": 19.5},
     {"name": "CeeDee Lamb", "pos": "WR", "ros_ppg": 20.0},
     {"name": "T.J. Hockenson", "pos": "TE", "ros_ppg": 12.5},
-    {"name": "Carnell Tate", "pos": "WR", "ros_ppg": 8.0},
-    {"name": "Wan'Dale Robinson", "pos": "WR", "ros_ppg": 11.0},
     {"name": "Breece Hall", "pos": "RB", "ros_ppg": 17.5},
     {"name": "Treylon Burks", "pos": "WR", "ros_ppg": 7.0},
-    {"name": "Tyler Warren", "pos": "TE", "ros_ppg": 10.0},
+    {"name": "Carnell Tate", "pos": "WR", "ros_ppg": 8.0},
+    {"name": "Wan'Dale Robinson", "pos": "WR", "ros_ppg": 11.0},
     {"name": "Seth McGowan", "pos": "RB", "ros_ppg": 6.5},
     {"name": "Tank Dell", "pos": "WR", "ros_ppg": 12.0},
     {"name": "Terrance Ferguson", "pos": "TE", "ros_ppg": 6.0},
-    {"name": "J. Croskey-Merritt", "pos": "RB", "ros_ppg": 6.0},
-    {"name": "Kimani Vidal", "pos": "RB", "ros_ppg": 7.5}
+    {"name": "J. Croskey-Merritt", "pos": "RB", "ros_ppg": 6.0}
   ],
   "Nico Suave": [
     {"name": "Trevor Lawrence", "pos": "QB", "ros_ppg": 18.5},
+    {"name": "Rachaad White", "pos": "RB", "ros_ppg": 13.0},
     {"name": "Zach Charbonnet", "pos": "RB", "ros_ppg": 11.5},
     {"name": "Luther Burden III", "pos": "WR", "ros_ppg": 13.0},
     {"name": "Chris Olave", "pos": "WR", "ros_ppg": 14.5},
+    {"name": "Tyler Warren", "pos": "TE", "ros_ppg": 10.0},
     {"name": "Emeka Egbuka", "pos": "WR", "ros_ppg": 13.5},
     {"name": "Malachi Fields", "pos": "WR", "ros_ppg": 9.0},
     {"name": "TreVeyon Henderson", "pos": "RB", "ros_ppg": 12.5},
     {"name": "Chris Godwin Jr.", "pos": "WR", "ros_ppg": 13.0},
+    {"name": "Kimani Vidal", "pos": "RB", "ros_ppg": 7.5},
     {"name": "Patrick Mahomes", "pos": "QB", "ros_ppg": 21.0},
     {"name": "Travis Etienne Jr.", "pos": "RB", "ros_ppg": 14.0},
     {"name": "Jeremiyah Love", "pos": "RB", "ros_ppg": 10.0}
@@ -68,7 +68,7 @@
     {"name": "Caleb Douglas", "pos": "WR", "ros_ppg": 8.0},
     {"name": "Dallas Goedert", "pos": "TE", "ros_ppg": 11.5},
     {"name": "Jordan Addison", "pos": "WR", "ros_ppg": 13.0},
-    {"name": "Juwan Johnson", "pos": "TE", "ros_ppg": 8.5},
+    {"name": "DJ Moore", "pos": "WR", "ros_ppg": 14.0},
     {"name": "Kenny Gainwell", "pos": "RB", "ros_ppg": 7.5},
     {"name": "Rico Dowdle", "pos": "RB", "ros_ppg": 11.0},
     {"name": "Devaughn Vele", "pos": "WR", "ros_ppg": 8.0},
@@ -80,8 +80,8 @@
     {"name": "Aaron Jones Sr.", "pos": "RB", "ros_ppg": 14.5},
     {"name": "Cam Skattebo", "pos": "RB", "ros_ppg": 12.0},
     {"name": "Nico Collins", "pos": "WR", "ros_ppg": 17.5},
-    {"name": "DJ Moore", "pos": "WR", "ros_ppg": 14.0},
     {"name": "Ja'Marr Chase", "pos": "WR", "ros_ppg": 19.0},
+    {"name": "Juwan Johnson", "pos": "TE", "ros_ppg": 8.5},
     {"name": "Rashee Rice", "pos": "WR", "ros_ppg": 15.5},
     {"name": "Antonio Williams", "pos": "WR", "ros_ppg": 8.5},
     {"name": "Keaton Mitchell", "pos": "RB", "ros_ppg": 7.0},
@@ -99,11 +99,9 @@
     {"name": "Marvin Harrison Jr.", "pos": "WR", "ros_ppg": 16.0},
     {"name": "Samaje Perine", "pos": "RB", "ros_ppg": 7.5},
     {"name": "Emanuel Wilson", "pos": "RB", "ros_ppg": 7.0},
+    {"name": "Jordan Love", "pos": "QB", "ros_ppg": 19.5},
     {"name": "Bam Knight", "pos": "RB", "ros_ppg": 6.5},
-    {"name": "Tre Tucker", "pos": "WR", "ros_ppg": 9.5},
-    {"name": "David Montgomery", "pos": "RB", "ros_ppg": 13.5},
-    {"name": "A.J. Brown", "pos": "WR", "ros_ppg": 17.5},
-    {"name": "De'Zhaun Stribling", "pos": "WR", "ros_ppg": 8.0}
+    {"name": "A.J. Brown", "pos": "WR", "ros_ppg": 17.5}
   ],
   "BuddyBudz": [
     {"name": "Joe Burrow", "pos": "QB", "ros_ppg": 21.5},
@@ -114,11 +112,13 @@
     {"name": "Dalton Kincaid", "pos": "TE", "ros_ppg": 11.5},
     {"name": "KC Concepcion Jr.", "pos": "WR", "ros_ppg": 10.5},
     {"name": "Keenan Allen", "pos": "WR", "ros_ppg": 12.5},
-    {"name": "Jordan Love", "pos": "QB", "ros_ppg": 19.5},
+    {"name": "Tre Tucker", "pos": "WR", "ros_ppg": 9.5},
     {"name": "J.K. Dobbins", "pos": "RB", "ros_ppg": 13.5},
-    {"name": "Kyler Murray", "pos": "QB", "ros_ppg": 20.0}
+    {"name": "David Montgomery", "pos": "RB", "ros_ppg": 13.5},
+    {"name": "Kyler Murray", "pos": "QB", "ros_ppg": 20.0},
+    {"name": "De'Zhaun Stribling", "pos": "WR", "ros_ppg": 8.0}
   ],
-  "Armaan": [
+  "FartFactory": [
     {"name": "Dak Prescott", "pos": "QB", "ros_ppg": 19.0},
     {"name": "Jahmyr Gibbs", "pos": "RB", "ros_ppg": 17.0},
     {"name": "Blake Corum", "pos": "RB", "ros_ppg": 9.5},
@@ -132,9 +132,9 @@
     {"name": "J.J. McCarthy", "pos": "QB", "ros_ppg": 14.0},
     {"name": "Greg Dulcich", "pos": "TE", "ros_ppg": 6.5},
     {"name": "Roman Wilson", "pos": "WR", "ros_ppg": 7.5},
-    {"name": "Kaelon Black", "pos": "RB", "ros_ppg": 6.0}
+    {"name": "Alec Pierce", "pos": "WR", "ros_ppg": 10.0}
   ],
-  "FartFactory": [
+  "Armaan": [
     {"name": "Josh Allen", "pos": "QB", "ros_ppg": 23.5},
     {"name": "Josh Jacobs", "pos": "RB", "ros_ppg": 15.5},
     {"name": "Jadarian Price", "pos": "RB", "ros_ppg": 9.0},
@@ -144,7 +144,7 @@
     {"name": "Hunter Henry", "pos": "TE", "ros_ppg": 9.5},
     {"name": "Khalil Shakir", "pos": "WR", "ros_ppg": 12.0},
     {"name": "Mike Evans", "pos": "WR", "ros_ppg": 15.5},
-    {"name": "Alec Pierce", "pos": "WR", "ros_ppg": 10.0},
+    {"name": "Kaelon Black", "pos": "RB", "ros_ppg": 6.0},
     {"name": "Kyle Monangai", "pos": "RB", "ros_ppg": 9.0},
     {"name": "Courtland Sutton", "pos": "WR", "ros_ppg": 13.0},
     {"name": "Jordyn Tyson", "pos": "WR", "ros_ppg": 8.0}
@@ -154,9 +154,10 @@
     {"name": "Bijan Robinson", "pos": "RB", "ros_ppg": 17.5},
     {"name": "Javonte Williams", "pos": "RB", "ros_ppg": 12.0},
     {"name": "Christian Watson", "pos": "WR", "ros_ppg": 12.5},
+    {"name": "Stefon Diggs", "pos": "WR", "ros_ppg": 14.5},
     {"name": "Travis Kelce", "pos": "TE", "ros_ppg": 13.5},
     {"name": "D'Andre Swift", "pos": "RB", "ros_ppg": 13.0},
-    {"name": "Drake London", "pos": "WR", "ros_ppg": 15.5},
+    {"name": "Braelon Allen", "pos": "RB", "ros_ppg": 9.5},
     {"name": "Germie Bernard", "pos": "WR", "ros_ppg": 8.0},
     {"name": "Josh Downs", "pos": "WR", "ros_ppg": 12.0},
     {"name": "Jakobi Meyers", "pos": "WR", "ros_ppg": 12.5},
@@ -167,8 +168,7 @@
     {"name": "Jared Goff", "pos": "QB", "ros_ppg": 18.5},
     {"name": "Bucky Irving", "pos": "RB", "ros_ppg": 13.5},
     {"name": "Saquon Barkley", "pos": "RB", "ros_ppg": 18.5},
-    {"name": "Stefon Diggs", "pos": "WR", "ros_ppg": 14.5},
-    {"name": "Braelon Allen", "pos": "RB", "ros_ppg": 9.5},
+    {"name": "Drake London", "pos": "WR", "ros_ppg": 15.5},
     {"name": "Jalen Coker", "pos": "WR", "ros_ppg": 8.5},
     {"name": "Dalton Schultz", "pos": "TE", "ros_ppg": 9.5},
     {"name": "Garrett Wilson", "pos": "WR", "ros_ppg": 16.5},
@@ -186,7 +186,7 @@
     {"name": "Matthew Golden", "pos": "WR", "ros_ppg": 9.5},
     {"name": "Trey McBride", "pos": "TE", "ros_ppg": 13.5},
     {"name": "Mike Gesicki", "pos": "TE", "ros_ppg": 8.5},
-    {"name": "Quentin Johnston", "pos": "WR", "ros_ppg": 11.0},
+    {"name": "Jahan Dotson", "pos": "WR", "ros_ppg": 8.5},
     {"name": "Mark Andrews", "pos": "TE", "ros_ppg": 11.0},
     {"name": "Aaron Rodgers", "pos": "QB", "ros_ppg": 16.0},
     {"name": "DeVonta Smith", "pos": "WR", "ros_ppg": 14.5},
@@ -202,7 +202,7 @@
     {"name": "George Kittle", "pos": "TE", "ros_ppg": 13.5},
     {"name": "Jonah Coleman", "pos": "RB", "ros_ppg": 10.5},
     {"name": "Omarion Hampton", "pos": "RB", "ros_ppg": 11.0},
-    {"name": "Jahan Dotson", "pos": "WR", "ros_ppg": 8.5},
+    {"name": "Quentin Johnston", "pos": "WR", "ros_ppg": 11.0},
     {"name": "Jordan Mason", "pos": "RB", "ros_ppg": 11.5},
     {"name": "Deebo Samuel Sr.", "pos": "WR", "ros_ppg": 14.0},
     {"name": "Adonai Mitchell", "pos": "WR", "ros_ppg": 9.0}
