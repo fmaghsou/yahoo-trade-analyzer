@@ -1,0 +1,19 @@
+{
+  "_note": "Standings as of Sat Nov 7, 2026 03:03am EST (Yahoo), before Week 9 results. PF = points for, PA = points against.",
+  "teams": [
+    {"team": "BuddyBudz", "w": 7, "l": 1, "t": 0, "pf": 1167.08, "pa": 990.63},
+    {"team": "Armaan", "w": 6, "l": 2, "t": 0, "pf": 1055.45, "pa": 1000.54},
+    {"team": "Sicario", "w": 5, "l": 3, "t": 0, "pf": 1239.23, "pa": 1092.38},
+    {"team": "Bill Belichick the Coach (BBC)", "w": 5, "l": 3, "t": 0, "pf": 1187.47, "pa": 995.29},
+    {"team": "DQ's Brotherhood", "w": 5, "l": 3, "t": 0, "pf": 1140.73, "pa": 1127.13},
+    {"team": "#GETGOT", "w": 5, "l": 3, "t": 0, "pf": 1002.65, "pa": 997.46},
+    {"team": "FartFactory", "w": 4, "l": 4, "t": 0, "pf": 1255.59, "pa": 1138.71},
+    {"team": "DrSweettooth", "w": 4, "l": 4, "t": 0, "pf": 1161.48, "pa": 1142.48},
+    {"team": "Iceman", "w": 3, "l": 5, "t": 0, "pf": 1095.58, "pa": 1099.71},
+    {"team": "Dose of Dev", "w": 3, "l": 5, "t": 0, "pf": 1061.28, "pa": 1068.07},
+    {"team": "Kappamino", "w": 3, "l": 5, "t": 0, "pf": 1047.46, "pa": 1095.04},
+    {"team": "Drake Gaye", "w": 3, "l": 5, "t": 0, "pf": 1034.92, "pa": 1117.26},
+    {"team": "Nico Suave", "w": 3, "l": 5, "t": 0, "pf": 877.67, "pa": 1078.45},
+    {"team": "I was Bourne Brown", "w": 0, "l": 8, "t": 0, "pf": 848.35, "pa": 1231.79}
+  ]
+}

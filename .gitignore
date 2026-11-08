@@ -1,2 +1,6 @@
 .venv/
 __pycache__/
+
+# Contains Yahoo API secrets - never commit
+get_token.py
+.env

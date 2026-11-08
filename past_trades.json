@@ -1,0 +1,32 @@
+{
+  "_note": "From Yahoo Transactions > Trades (screenshots, Nov 7 2026). 'receives' = players that team would get. Outcome is the league vote. Rosters at trade time are unknown, so the backtest uses the asset lens only, with today's market values (hindsight).",
+  "trades": [
+    {"id": 1, "date": "Sep 2", "outcome": "Vetoed",
+     "team_a": "Kappamino", "a_receives": ["Malik Nabers", "George Kittle"],
+     "team_b": "DQ's Brotherhood", "b_receives": ["Colston Loveland", "Quentin Johnston"]},
+    {"id": 2, "date": "Sep 2-3", "outcome": "Vetoed (twice)",
+     "team_a": "DQ's Brotherhood", "a_receives": ["D.J. Moore", "Omarion Hampton"],
+     "team_b": "I was Bourne Brown", "b_receives": ["Amon-Ra St. Brown", "Jordan Mason"]},
+    {"id": 3, "date": "Sep 6", "outcome": "Passed",
+     "team_a": "DQ's Brotherhood", "a_receives": ["Christian McCaffrey"],
+     "team_b": "#GETGOT", "b_receives": ["Amon-Ra St. Brown"]},
+    {"id": 4, "date": "Sep 15", "outcome": "Vetoed (twice)",
+     "team_a": "FartFactory", "a_receives": ["Drake London", "Harold Fannin Jr."],
+     "team_b": "Iceman", "b_receives": ["Isaiah Likely"]},
+    {"id": 5, "date": "Sep 19", "outcome": "Vetoed",
+     "team_a": "FartFactory", "a_receives": ["Garrett Wilson"],
+     "team_b": "Iceman", "b_receives": ["Isaiah Likely"]},
+    {"id": 6, "date": "Oct 19-20", "outcome": "Passed (after one veto)",
+     "team_a": "DQ's Brotherhood", "a_receives": ["Omarion Hampton", "Jaylen Waddle"],
+     "team_b": "I was Bourne Brown", "b_receives": ["Zay Flowers", "Tyler Shough"]},
+    {"id": 7, "date": "Oct 20", "outcome": "Passed",
+     "team_a": "#GETGOT", "a_receives": ["Tyjae Spears", "Ja'Marr Chase"],
+     "team_b": "Nico Suave", "b_receives": ["Tyler Warren", "Jeremiyah Love", "Emeka Egbuka"]},
+    {"id": 8, "date": "Nov 4", "outcome": "Passed",
+     "team_a": "#GETGOT", "a_receives": ["CeeDee Lamb", "Carnell Tate"],
+     "team_b": "Dose of Dev", "b_receives": ["Ja'Marr Chase", "Brian Thomas Jr."]},
+    {"id": 9, "date": "Nov 4", "outcome": "Vetoed",
+     "team_a": "#GETGOT", "a_receives": ["Kenneth Walker III"],
+     "team_b": "Drake Gaye", "b_receives": ["Tyler Allgeier", "Wan'Dale Robinson", "Breece Hall"]}
+  ]
+}

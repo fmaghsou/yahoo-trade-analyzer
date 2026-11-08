@@ -1,0 +1,59 @@
+{
+  "_note": "Remaining regular-season matchups transcribed from Yahoo screenshots on Nov 7, 2026. Week 9 is in progress (treat as pending). Playoffs start Week 15 (8 teams, weeks 15-17).",
+  "weeks": {
+    "9": [
+      ["FartFactory", "Armaan"],
+      ["#GETGOT", "I was Bourne Brown"],
+      ["Nico Suave", "DQ's Brotherhood"],
+      ["Bill Belichick the Coach (BBC)", "BuddyBudz"],
+      ["Kappamino", "Sicario"],
+      ["Dose of Dev", "Iceman"],
+      ["Drake Gaye", "DrSweettooth"]
+    ],
+    "10": [
+      ["FartFactory", "Sicario"],
+      ["#GETGOT", "Armaan"],
+      ["Nico Suave", "Bill Belichick the Coach (BBC)"],
+      ["Kappamino", "Dose of Dev"],
+      ["I was Bourne Brown", "BuddyBudz"],
+      ["Drake Gaye", "DQ's Brotherhood"],
+      ["Iceman", "DrSweettooth"]
+    ],
+    "11": [
+      ["FartFactory", "Dose of Dev"],
+      ["#GETGOT", "Sicario"],
+      ["Nico Suave", "I was Bourne Brown"],
+      ["Bill Belichick the Coach (BBC)", "Drake Gaye"],
+      ["Kappamino", "Iceman"],
+      ["BuddyBudz", "Armaan"],
+      ["DrSweettooth", "DQ's Brotherhood"]
+    ],
+    "12": [
+      ["FartFactory", "Kappamino"],
+      ["#GETGOT", "Dose of Dev"],
+      ["Nico Suave", "Armaan"],
+      ["Bill Belichick the Coach (BBC)", "DrSweettooth"],
+      ["I was Bourne Brown", "Drake Gaye"],
+      ["BuddyBudz", "Sicario"],
+      ["Iceman", "DQ's Brotherhood"]
+    ],
+    "13": [
+      ["FartFactory", "Iceman"],
+      ["#GETGOT", "Kappamino"],
+      ["Nico Suave", "Sicario"],
+      ["Bill Belichick the Coach (BBC)", "DQ's Brotherhood"],
+      ["I was Bourne Brown", "DrSweettooth"],
+      ["Dose of Dev", "BuddyBudz"],
+      ["Drake Gaye", "Armaan"]
+    ],
+    "14": [
+      ["FartFactory", "#GETGOT"],
+      ["Nico Suave", "Dose of Dev"],
+      ["Bill Belichick the Coach (BBC)", "Iceman"],
+      ["Kappamino", "BuddyBudz"],
+      ["I was Bourne Brown", "DQ's Brotherhood"],
+      ["Drake Gaye", "Sicario"],
+      ["Armaan", "DrSweettooth"]
+    ]
+  }
+}

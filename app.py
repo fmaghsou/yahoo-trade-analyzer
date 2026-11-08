@@ -1,249 +1,183 @@
+"""FleeceGuard v2 - dynasty trade arbitrator. Run with: streamlit run app.py"""
+import copy
+import datetime as dt
 import json
 from pathlib import Path
+
 import streamlit as st
 
-st.set_page_config(
-    page_title="FleeceGuard | Fantasy Trade Arbitrator",
-    page_icon="🛡️",
-    layout="wide",
-)
+import backtest as bt
+import config as C
+import data_sources as ds
+import engine as eng
 
-st.title("🛡️ FleeceGuard")
-st.caption("Fantasy Trade Arbitrator & Lineup Optimizer")
-
-# --- 1. LEAGUE ROSTER LAYOUT CONFIGURATION ---
-# Configured for: 1 QB, 2 RB, 2 WR, 1 TE, 2 W/R/T FLEX
-ROSTER_SLOTS = {"QB": 1, "RB": 2, "WR": 2, "TE": 1, "FLEX": 2}
-
-# --- 2. HARDCODED CUSTOM LEAGUE SCORING RULES (SCHEMA / REFERENCE) ---
-LEAGUE_SCORING_RULES = {
-    "completions": 0.25,
-    "incompletions": -0.25,
-    "passing_yards_per_point": 25.0,
-    "passing_td": 4.0,
-    "interceptions": -1.0,
-    "passing_bonuses": {275: 1.0, 375: 3.0, 450: 5.0},
-    "passing_td_40plus_bonus": 2.0,
-    "rushing_yards_per_point": 10.0,
-    "rushing_td": 6.0,
-    "rushing_bonuses": {75: 2.0, 100: 4.0, 150: 6.0},
-    "rushing_td_40plus_bonus": 2.0,
-    "receptions": 1.0,
-    "receiving_yards_per_point": 10.0,
-    "receiving_td": 6.0,
-    "receiving_bonuses": {75: 2.0, 100: 4.0},
-    "receiving_td_40plus_bonus": 2.0,
-    "fumbles_lost": -2.0,
-    "two_point_conversions": 2.0,
-}
+st.set_page_config(page_title="FleeceGuard", page_icon="🛡️", layout="wide")
+HERE = Path(__file__).parent
 
 
-# --- 3. LOAD CENTRAL ROSTERS FROM JSON ---
 @st.cache_data(ttl=60)
-def load_central_rosters():
-    rosters_path = Path(__file__).parent / "rosters.json"
-    if rosters_path.exists():
-        try:
-            with open(rosters_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            st.error(f"Error reading rosters.json: {e}")
-            return {}
-    return {}
+def read_json(name):
+    p = HERE / name
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
 
-league_rosters = load_central_rosters()
+@st.cache_data(ttl=3600, show_spinner="Loading live stats, injuries, and dynasty values...")
+def live_data():
+    return ds.load_live()
 
-if not league_rosters:
-    st.error(
-        "No roster data loaded. Please ensure `rosters.json` is committed to GitHub."
-    )
+
+rosters_raw = read_json("rosters.json")
+standings_raw = read_json("standings.json")
+schedule_raw = read_json("schedule.json")
+if not (rosters_raw and standings_raw and schedule_raw):
+    st.error("Missing rosters.json, standings.json, or schedule.json in the repo.")
     st.stop()
 
-# --- 4. SIDEBAR LEAGUE SETTINGS ---
-st.sidebar.header("⚙️ League Settings")
+standings = {t["team"]: t for t in standings_raw["teams"]}
+schedule = schedule_raw["weeks"]
+problems = eng.validate_league(rosters_raw, standings, schedule)
+if problems:
+    st.error("League files don't line up. Fix these before trusting any verdict:")
+    for p in problems:
+        st.write("- " + p)
+    st.stop()
 
-scoring_format = st.sidebar.selectbox(
-    "Waiver Replacement Baseline",
-    ["Custom Bonus League (Default)", "Full PPR (1.0)", "Half PPR (0.5)"],
-    index=0,
-)
+st.title("🛡️ FleeceGuard")
+st.caption("Dynasty trade arbitrator: market value + lineup impact + playoff odds")
+if dt.date.today() > C.TRADE_DEADLINE:
+    st.info(f"The trade deadline ({C.TRADE_DEADLINE:%b %d}) has passed. "
+            "Use this to review past trades or plan for next season.")
 
-BASELINES_BY_FORMAT = {
-    "Custom Bonus League (Default)": {
-        "QB": 18.5,
-        "RB": 9.5,
-        "WR": 10.5,
-        "TE": 7.0,
-    },
-    "Full PPR (1.0)": {"QB": 14.0, "RB": 8.0, "WR": 9.0, "TE": 6.5},
-    "Half PPR (0.5)": {"QB": 14.0, "RB": 7.0, "WR": 7.5, "TE": 5.5},
-}
+# ---- sidebar: tunable settings --------------------------------------------------------
+S = eng.default_settings()
+with st.sidebar:
+    st.header("Settings")
+    S["fair_gap"] = st.slider("Fair if value gap under", 0.05, 0.40, C.FAIR_GAP, 0.01)
+    S["veto_gap"] = st.slider("Veto-worthy if gap over", 0.15, 0.70, C.VETO_GAP, 0.01)
+    if S["veto_gap"] <= S["fair_gap"]:
+        S["veto_gap"] = S["fair_gap"] + 0.01
+        st.caption("Veto threshold raised above the fair threshold.")
+    S["power"] = st.slider("Star premium (1 = none)", 1.0, 2.5, C.CONSOLIDATION_POWER, 0.1)
+    S["n_sims"] = st.select_slider("Playoff simulations", [1000, 2000, 4000, 8000], C.N_SIMS)
+    if st.button("Refresh live data"):
+        st.cache_data.clear()
+        st.session_state.pop("result", None)
+        st.rerun()
 
-WAIVER_BASELINES = BASELINES_BY_FORMAT[scoring_format]
+live = live_data()
+table = ds.build_table(rosters_raw, live, S)
+repl = eng.replacement_levels(table["fa"]) if live["ppg"] else None   # None = no stats feed
+has_market = bool(live["market"])
+# Rebuilt every rerun on purpose: it's fast, and caching it once served stale results.
+ctx = eng.build_context(copy.deepcopy(table["players"]), repl, standings, schedule, S,
+                        has_market, live["current_week"])
 
-st.sidebar.markdown("---")
-st.sidebar.subheader("Active Starter Layout")
-st.sidebar.write("• 1 QB")
-st.sidebar.write("• 2 RB")
-st.sidebar.write("• 2 WR")
-st.sidebar.write("• 1 TE")
-st.sidebar.write("• **2 FLEX (W/R/T)**")
+if not live["stats_source"] or not has_market:
+    st.warning("Some live data failed to load, so verdicts are less reliable. See the Data check tab.")
 
-st.sidebar.markdown("---")
-st.sidebar.subheader("Waiver Baseline Floors")
-st.sidebar.json(WAIVER_BASELINES)
-
-
-# --- 5. OPTIMAL LINEUP SOLVER ---
-def calculate_optimal_starting_ppg(roster_list):
-    by_pos = {"QB": [], "RB": [], "WR": [], "TE": []}
-    for p in roster_list:
-        pos = p.get("pos", "")
-        if pos in by_pos:
-            by_pos[pos].append(p.get("ros_ppg", 0.0))
-
-    for pos in by_pos:
-        by_pos[pos].sort(reverse=True)
-
-    total_ppg = 0.0
-    flex_candidates = []
-
-    for pos in ["QB", "RB", "WR", "TE"]:
-        slots = ROSTER_SLOTS.get(pos, 0)
-        starters = by_pos[pos][:slots]
-        while len(starters) < slots:
-            starters.append(WAIVER_BASELINES[pos])
-        total_ppg += sum(starters)
-
-        # Only RB, WR, TE bench players are eligible for W/R/T FLEX slots
-        if pos != "QB":
-            flex_candidates.extend(by_pos[pos][slots:])
-
-    flex_slots = ROSTER_SLOTS.get("FLEX", 0)
-    flex_candidates.sort(reverse=True)
-
-    while len(flex_candidates) < flex_slots:
-        flex_candidates.append(
-            (WAIVER_BASELINES["RB"] + WAIVER_BASELINES["WR"]) / 2.0
-        )
-
-    total_ppg += sum(flex_candidates[:flex_slots])
-
-    return round(total_ppg, 2)
+tab_trade, tab_back, tab_teams, tab_data = st.tabs(
+    ["Trade analyzer", "Backtest", "Teams & playoff odds", "Data check"])
 
 
-def evaluate_trade(
-    team_a_roster, team_b_roster, sending_from_a, sending_from_b
-):
-    pre_a = calculate_optimal_starting_ppg(team_a_roster)
-    pre_b = calculate_optimal_starting_ppg(team_b_roster)
-
-    post_a_roster = [
-        p for p in team_a_roster if p["name"] not in sending_from_a
-    ] + [p for p in team_b_roster if p["name"] in sending_from_b]
-    post_b_roster = [
-        p for p in team_b_roster if p["name"] not in sending_from_b
-    ] + [p for p in team_a_roster if p["name"] in sending_from_a]
-
-    post_a = calculate_optimal_starting_ppg(post_a_roster)
-    post_b = calculate_optimal_starting_ppg(post_b_roster)
-
-    return {
-        "team_a": {
-            "pre": pre_a,
-            "post": post_a,
-            "diff": round(post_a - pre_a, 2),
-        },
-        "team_b": {
-            "pre": pre_b,
-            "post": post_b,
-            "diff": round(post_b - pre_b, 2),
-        },
-    }
+def player_rows(players):
+    return [{"Player": p["name"], "Pos": p["pos"], "NFL": p["nfl_team"] or "-",
+             "Age": p["age"] or "-", "Status": p["avail"], "Rank": p["rank"] or "-",
+             "GP": p["gp"], "Season PPG": round(p["season_ppg"], 1),
+             "Model PPG": round(p["ppg"], 1),
+             "Dynasty value": "-" if p["market"] is None else f"{p['market']:,.0f}"} for p in players]
 
 
-# --- 6. MAIN TRADE UI ---
-st.subheader("1. Select Trading Teams")
-col1, col2 = st.columns(2)
+# ---- Trade analyzer ---------------------------------------------------------------------
+with tab_trade:
+    teams = list(rosters_raw)
+    c1, c2 = st.columns(2)
+    ta = c1.selectbox("Team A", teams, index=0)
+    tb = c2.selectbox("Team B", [t for t in teams if t != ta], index=0)
+    names = lambda t: [p["name"] for p in ctx["rosters"][t]]  # noqa: E731
+    s1, s2 = st.columns(2)
+    send_a = s1.multiselect(f"{ta} sends", names(ta))
+    send_b = s2.multiselect(f"{tb} sends", names(tb))
+    key = (ta, tb, tuple(send_a), tuple(send_b), json.dumps(S, sort_keys=True))
 
-teams_list = list(league_rosters.keys())
+    if st.button("Run analysis", type="primary"):
+        if not send_a or not send_b:
+            st.warning("Pick at least one player on each side.")
+        else:
+            st.session_state["result"] = (key, eng.evaluate_trade(ctx, ta, send_a, tb, send_b))
 
-with col1:
-    team_a_name = st.selectbox("Team A (Initiating)", teams_list, index=0)
-with col2:
-    available_team_b = [t for t in teams_list if t != team_a_name]
-    team_b_name = st.selectbox("Team B (Target)", available_team_b, index=0)
-
-team_a_roster = league_rosters[team_a_name]
-team_b_roster = league_rosters[team_b_name]
-
-st.subheader("2. Select Traded Players")
-t_col1, t_col2 = st.columns(2)
-
-with t_col1:
-    giving_a = st.multiselect(
-        f"Players sent from {team_a_name}:", [p["name"] for p in team_a_roster]
-    )
-with t_col2:
-    giving_b = st.multiselect(
-        f"Players sent from {team_b_name}:", [p["name"] for p in team_b_roster]
-    )
-
-if st.button("🛡️ Run FleeceGuard Analysis", type="primary"):
-    if not giving_a or not giving_b:
-        st.warning(
-            "Please select at least one player on each side of the trade."
-        )
-    else:
-        results = evaluate_trade(
-            team_a_roster, team_b_roster, giving_a, giving_b
-        )
-
-        st.markdown("---")
-        st.subheader(
-            f"📊 FleeceGuard Verdict & Lineup Impact ({scoring_format})"
-        )
-
+    # Kept in session state so the result survives reruns (e.g. clicking the WhatsApp box);
+    # dropped automatically if the selected trade or settings change.
+    saved = st.session_state.get("result")
+    if saved and saved[0] == key:
+        res = saved[1]
+        box = {0: st.success, 1: st.warning, 2: st.error, None: st.info}[res["level"]]
+        box(f"**{res['verdict']}** ({res['confidence']} confidence)")
         m1, m2 = st.columns(2)
-        diff_a = results["team_a"]["diff"]
-        diff_b = results["team_b"]["diff"]
+        for col, k in ((m1, "a"), (m2, "b")):
+            s = res["sides"][k]
+            col.metric(f"{s['team']} ({s['tier']}) lineup", f"{s['lineup_post']:.1f} PPG",
+                       f"{s['lineup_delta']:+.1f}")
+            col.metric("Playoff odds", f"{s['playoff_post']:.0%}", f"{s['playoff_delta']*100:+.1f} pts")
+        for line in res["reasons"]:
+            st.write("- " + line)
+        st.subheader("Players in the deal")
+        st.dataframe(player_rows(res["sides"]["a"]["sends"] + res["sides"]["b"]["sends"]))
+        st.text_area("Copy for WhatsApp", eng.whatsapp_text(res), height=200)
 
-        with m1:
-            st.metric(
-                label=f"{team_a_name} Starting Lineup PPG",
-                value=f"{results['team_a']['post']} PPG",
-                delta=f"{diff_a:+} PPG/week",
-            )
-        with m2:
-            st.metric(
-                label=f"{team_b_name} Starting Lineup PPG",
-                value=f"{results['team_b']['post']} PPG",
-                delta=f"{diff_b:+} PPG/week",
-            )
+# ---- Backtest ----------------------------------------------------------------------------
+with tab_back:
+    st.write("Your past trades, judged on **dynasty value only** with today's market values "
+             "(hindsight, and no roster context). Compare the bot to the league's vote.")
+    if not has_market:
+        st.warning("No market values loaded, so the backtest can't run. See the Data check tab.")
+    else:
+        rows, warns = bt.run_backtest(live, S)
+        st.dataframe([{"#": r["id"], "Date": r["date"], "Team A": r["team_a"], "A gets": r["a_gets"],
+                       "Team B": r["team_b"], "B gets": r["b_gets"], "League": r["league"],
+                       "Bot": r["bot"], "Gap": "-" if r["gap"] is None else f"{r['gap']:.0%}",
+                       "Bot says ahead": r["winner"] or "-"} for r in rows])
+        for w in warns:
+            st.caption("⚠️ " + w)
 
-        st.markdown("---")
-        st.subheader("⚖️ League Veto / Collusion Guidance")
+# ---- Teams ----------------------------------------------------------------------------------
+with tab_teams:
+    order = sorted(rosters_raw, key=lambda t: -ctx["probs"][t])
+    st.dataframe([{"Team": t, "Record": f"{standings[t]['w']}-{standings[t]['l']}",
+                   "PF": standings[t]["pf"], "Lineup PPG (model)": round(ctx["lineups"][t], 1),
+                   "Playoff odds": f"{ctx['probs'][t]:.0%}", "Tier": eng.tier(ctx["probs"][t])}
+                  for t in order])
+    st.caption(f"{ctx['weeks_left']} regular-season weeks simulated. Weekly score volatility "
+               "and K/DEF scoring are assumptions, so treat odds as a guide.")
+    pick = st.selectbox("View roster", list(rosters_raw))
+    st.dataframe(player_rows(sorted(ctx["rosters"][pick], key=lambda p: -p["ppg"])))
 
-        net_advantage = round(diff_a - diff_b, 2)
-        if net_advantage > 0:
-            winner_text = f"**{team_a_name}** gains a +{abs(net_advantage)} PPG net advantage over {team_b_name}."
-        elif net_advantage < 0:
-            winner_text = f"**{team_b_name}** gains a +{abs(net_advantage)} PPG net advantage over {team_a_name}."
-        else:
-            winner_text = "Both teams experience identical net point shifts."
+# ---- Data check -----------------------------------------------------------------------------
+with tab_data:
+    st.write(f"**Stats source:** {live['stats_source'] or 'none'} "
+             f"({live['weeks_loaded']} of {live['last_week']} weeks) | "
+             f"**Market values:** {live['market_source'] or 'none'} | "
+             f"**NFL week:** {live['current_week'] or 'unknown'}")
+    st.write("**Replacement level (PPG, from real free agents):**",
+             {k: round(v, 1) for k, v in ctx["repl"].items()} if repl else "not available (no stats)")
+    if table["unmatched"]:
+        st.error("Unmatched roster players (no live stats or market value). "
+                 "Fix the spelling in rosters.json or add an alias in config.py:")
+        st.write(table["unmatched"])
+    if table["flagged"]:
+        st.warning("Name matches to double-check:")
+        st.write(table["flagged"])
+    no_value = [(t, p["name"]) for t, ps in ctx["rosters"].items() for p in ps
+                if p["pid"] and p["market"] is None and p["ppg"] > ctx["repl"][p["pos"]]]
+    if has_market and no_value:
+        st.warning("Useful players with no dynasty value in the feed:")
+        st.write(no_value)
+    if not live["errors"] and not table["unmatched"]:
+        st.success("Everything loaded.")
+    for e in live["errors"]:
+        st.caption("⚠️ " + e)
 
-        if diff_a >= -1.0 and diff_b >= -1.0:
-            st.success(
-                f"✅ **FAIR TRADE:** Neither team suffers a starting lineup penalty. {winner_text} No veto recommended."
-            )
-        elif abs(diff_a - diff_b) > 7.0:
-            winner_team = team_a_name if diff_a > diff_b else team_b_name
-            loser_team = team_b_name if diff_a > diff_b else team_a_name
-            st.error(
-                f"🚨 **FLEECE ALERT:** Highly unbalanced starting lineup impact! **{winner_team}** gains a net advantage of +{abs(net_advantage)} PPG over **{loser_team}**. Review closely before approving!"
-            )
-        else:
-            st.info(
-                f"⚖️ **ACCEPTABLE MARGIN:** Minor scoring shift. {winner_text} Likely balancing roster depth or positional needs."
-            )
+# Attribution (Dynasty Dealer's free API requires a visible link)
+if live["market_source"] == "Dynasty Dealer":
+    st.caption("Values by [Dynasty Dealer](https://www.dynastydealer.com)")
+elif live["market_source"] == "FantasyCalc":
+    st.caption("Dynasty values from [FantasyCalc](https://www.fantasycalc.com)")
