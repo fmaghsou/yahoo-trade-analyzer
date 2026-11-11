@@ -1,0 +1,8 @@
+# FleeceGuard theme: light, with a purple accent and gray panels (Yahoo Fantasy style)
+[theme]
+base = "light"
+primaryColor = "#6001D2"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F1F4F8"
+textColor = "#232A31"
+font = "sans serif"

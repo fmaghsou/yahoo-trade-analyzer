@@ -221,7 +221,28 @@ def build_context(rosters, repl, standings, schedule, settings=None, has_market=
 
 
 # ---------------------------------------------------------------------- verdict --------
-LEVELS = ["FAIR", "LOPSIDED", "VETO-WORTHY"]
+# Wording is deliberate: none of these tells the league to veto.
+LEVELS = ["NO CONCERNS", "ONE-SIDED, BUT ALLOWED", "NEEDS A SECOND LOOK"]
+GUIDANCE = [
+    "Not grounds for a veto.",
+    "One side likely overpaid, but that is not grounds for a veto. Managers are allowed to "
+    "make trades that others wouldn't.",
+    "Before voting, ask both managers to explain the deal. A second look is not an "
+    "automatic veto.",
+]
+
+
+def even_out_hint(winner, keep_winner, diff, power):
+    """What the side getting more value could add to balance the trade.
+    diff is in star-premium units, so convert it back to a plain dynasty value."""
+    need = 10000.0 * (diff / 10000.0) ** (1.0 / power)
+    # Suggest up to two of the winner's own players whose value is close to what's needed
+    close = sorted((p for p in keep_winner
+                    if p.get("market") and abs(p["market"] - need) <= 0.2 * need),
+                   key=lambda p: abs(p["market"] - need))[:2]
+    eg = f" (for example, {' or '.join(p['name'] for p in close)})" if close else ""
+    return (f"To even it out: {winner} could add a player worth about {need:,.0f} in dynasty "
+            f"value{eg}.")
 
 
 def evaluate_trade(ctx, team_a, send_a, team_b, send_b):
@@ -279,7 +300,7 @@ def evaluate_trade(ctx, team_a, send_a, team_b, send_b):
     if not ctx["has_stats"] and not ctx["has_market"]:
         issues.append("no live stats and no market values loaded")
     if issues:
-        res.update(verdict="INCOMPLETE DATA", level=None, confidence="Low")
+        res.update(verdict="INCOMPLETE DATA", level=None)
     elif ctx["has_market"]:
         if level > 0 and d_play[value_loser] >= S["win_now_gain"]:
             level -= 1
@@ -287,26 +308,30 @@ def evaluate_trade(ctx, team_a, send_a, team_b, send_b):
                 f"{value_loser} gives up more dynasty value but gains "
                 f"{d_play[value_loser]*100:.1f} pts of playoff odds, so this reads as a "
                 f"defensible win-now move (verdict softened one level).")
-        # Lenses disagree: the value side also loses this season, or vice versa
+        # Context only (never counts against the trade): both sides are giving something up
         if level == 0 and d_play[value_winner] <= -S["win_now_gain"]:
             res["notes"].append(
-                f"Lenses disagree: {value_winner} wins on dynasty value but loses "
-                f"{-d_play[value_winner]*100:.1f} pts of playoff odds. Review manually.")
-        both_lose = level > 0 and d_play[value_loser] <= 0
-        res.update(verdict=LEVELS[level], level=level,
-                   confidence="High" if (both_lose or level == 0) else "Medium")
+                f"Context: {value_winner} gets more dynasty value but gives up "
+                f"{-d_play[value_winner]*100:.1f} pts of playoff odds this season.")
+        res.update(verdict=LEVELS[level], level=level)
+        if level > 0:
+            keep_w = keep_a if value_winner == team_a else keep_b
+            res["notes"].append(even_out_hint(value_winner, keep_w,
+                                              abs(net[team_a] - net[team_b]), S["power"]))
         if not ctx["has_stats"]:
-            res["confidence"] = "Medium" if level == 0 else res["confidence"]
             res["notes"].append("Live stats unavailable: verdict uses dynasty value only "
                                 "(lineup and playoff numbers are not meaningful).")
     else:
         diff = abs(d_play[team_a] - d_play[team_b]) * 100
         level = 0 if diff < 8 else (1 if diff < 20 else 2)
-        res.update(verdict=LEVELS[level], level=level, confidence="Low")
-        res["notes"].append("Market values unavailable: verdict uses the win-now lens only.")
+        res.update(verdict=LEVELS[level], level=level)
+        res["notes"].append("Market values unavailable: verdict uses the win-now lens only, "
+                            "so treat it as a rough guide.")
 
     if not ctx["schedule"]:
         res["notes"].append("Regular season is over, so playoff odds don't move.")
+    res["guidance"] = (GUIDANCE[res["level"]] if res["level"] is not None else
+                       "Not enough data to judge this trade. Check the Data check tab.")
     res["reasons"] = _reasons(res)
     return res
 
@@ -341,7 +366,8 @@ def asset_only(players_a_sends, players_b_sends, settings=None):
 def whatsapp_text(res):
     a, b = res["sides"]["a"], res["sides"]["b"]
     names = lambda ps: ", ".join(p["name"] for p in ps) or "nothing"  # noqa: E731
-    lines = [f"🛡️ FleeceGuard: {res['verdict']} ({res['confidence']} confidence)",
+    lines = [f"🛡️ FleeceGuard: {res['verdict']}",
+             res["guidance"],
              f"{a['team']} sends: {names(a['sends'])}",
              f"{b['team']} sends: {names(b['sends'])}"]
     if res["gap"] is not None:

@@ -2,6 +2,7 @@
 import datetime as dt
 
 SEASON = 2026
+LEAGUE_NAME = "The Fam League"   # shown in the header
 POSITIONS = ("QB", "RB", "WR", "TE")
 FLEX_POSITIONS = ("RB", "WR", "TE")
 
@@ -48,12 +49,19 @@ RANK_MIN_GAMES = 3       # min games to get a positional rank (e.g. "RB6")
 AVAILABILITY = {"Healthy": 1.0, "Questionable": 0.93, "Doubtful": 0.60, "Out": 0.30, "IR": 0.0}
 
 # ---- Trade verdict ------------------------------------------------------------------
-CONSOLIDATION_POWER = 1.6   # >1 rewards one star over several mid players
-FAIR_GAP = 0.15             # dynasty-value gap under this = fair
-VETO_GAP = 0.30             # over this = veto-worthy
+# Design goal: the tool answers "is there any reason to block this trade?", and the answer
+# should usually be no. Most trades should land in the first tier; the top tier should be rare.
+# Wrongly blocking a good-faith trade is worse than letting a mildly bad one through.
+#
+# Star premium: >1 rewards one star over several mid players. Kept mild (was 1.6) because the
+# market values already come from real trades, which include some of this premium.
+CONSOLIDATION_POWER = 1.3
+FAIR_GAP = 0.25             # dynasty-value gap under this = NO CONCERNS (was 0.15)
+VETO_GAP = 0.45             # over this = NEEDS A SECOND LOOK (was 0.30)
 # Swaps of two low-value players can show a big % gap on tiny numbers. Below this absolute
-# difference (in star-premium units; a ~3000-value player is ~1450) a trade is always FAIR.
-MIN_ABS_GAP = 750
+# difference (in star-premium units; roughly one ~2000-value bench player) a trade is
+# always NO CONCERNS.
+MIN_ABS_GAP = 1200
 WIN_NOW_GAIN = 0.06         # if the value-loser gains this much playoff probability, soften one level
 
 # ---- Playoff simulation -------------------------------------------------------------

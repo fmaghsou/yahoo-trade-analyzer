@@ -10,8 +10,10 @@ import backtest as bt
 import config as C
 import data_sources as ds
 import engine as eng
+import theme
 
 st.set_page_config(page_title="FleeceGuard", page_icon="🛡️", layout="wide")
+st.markdown(theme.CSS, unsafe_allow_html=True)
 HERE = Path(__file__).parent
 
 
@@ -42,8 +44,18 @@ if problems:
         st.write("- " + p)
     st.stop()
 
-st.title("🛡️ FleeceGuard")
-st.caption("Dynasty trade arbitrator: market value + lineup impact + playoff odds")
+st.markdown(theme.header_html(C.LEAGUE_NAME, C.SEASON), unsafe_allow_html=True)
+st.caption("Dynasty trade checker: market value + lineup impact + playoff odds. "
+           "A reference for the league vote, not a replacement for it.")
+with st.expander("What the results mean"):
+    st.write(f"- **NO CONCERNS**: the value gap is under {C.FAIR_GAP:.0%}, or too small to "
+             "matter. Not grounds for a veto.\n"
+             f"- **ONE-SIDED, BUT ALLOWED**: one side likely overpaid ({C.FAIR_GAP:.0%}-"
+             f"{C.VETO_GAP:.0%} gap). Still not grounds for a veto.\n"
+             f"- **NEEDS A SECOND LOOK**: a very large gap (over {C.VETO_GAP:.0%}). Ask both "
+             "managers to explain before voting. Not an automatic veto.\n"
+             "- Lineup and playoff numbers are context. They explain a trade and never count "
+             "against it.")
 if dt.date.today() > C.TRADE_DEADLINE:
     st.info(f"The trade deadline ({C.TRADE_DEADLINE:%b %d}) has passed. "
             "Use this to review past trades or plan for next season.")
@@ -52,11 +64,11 @@ if dt.date.today() > C.TRADE_DEADLINE:
 S = eng.default_settings()
 with st.sidebar:
     st.header("Settings")
-    S["fair_gap"] = st.slider("Fair if value gap under", 0.05, 0.40, C.FAIR_GAP, 0.01)
-    S["veto_gap"] = st.slider("Veto-worthy if gap over", 0.15, 0.70, C.VETO_GAP, 0.01)
+    S["fair_gap"] = st.slider("No concerns if value gap under", 0.05, 0.40, C.FAIR_GAP, 0.01)
+    S["veto_gap"] = st.slider("Second look if gap over", 0.15, 0.70, C.VETO_GAP, 0.01)
     if S["veto_gap"] <= S["fair_gap"]:
         S["veto_gap"] = S["fair_gap"] + 0.01
-        st.caption("Veto threshold raised above the fair threshold.")
+        st.caption("Second-look threshold raised above the no-concerns threshold.")
     S["power"] = st.slider("Star premium (1 = none)", 1.0, 2.5, C.CONSOLIDATION_POWER, 0.1)
     S["n_sims"] = st.select_slider("Playoff simulations", [1000, 2000, 4000, 8000], C.N_SIMS)
     if st.button("Refresh live data"):
@@ -110,8 +122,9 @@ with tab_trade:
     saved = st.session_state.get("result")
     if saved and saved[0] == key:
         res = saved[1]
-        box = {0: st.success, 1: st.warning, 2: st.error, None: st.info}[res["level"]]
-        box(f"**{res['verdict']}** ({res['confidence']} confidence)")
+        # Green / blue / orange. Nothing is red: no result is an accusation.
+        box = {0: st.success, 1: st.info, 2: st.warning, None: st.info}[res["level"]]
+        box(f"**{res['verdict']}**\n\n{res['guidance']}")
         m1, m2 = st.columns(2)
         for col, k in ((m1, "a"), (m2, "b")):
             s = res["sides"][k]
@@ -181,3 +194,4 @@ if live["market_source"] == "Dynasty Dealer":
     st.caption("Values by [Dynasty Dealer](https://www.dynastydealer.com)")
 elif live["market_source"] == "FantasyCalc":
     st.caption("Dynasty values from [FantasyCalc](https://www.fantasycalc.com)")
+st.caption("FleeceGuard is an independent league tool. It is not affiliated with Yahoo.")
