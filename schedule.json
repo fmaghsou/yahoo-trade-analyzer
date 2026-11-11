@@ -3,7 +3,7 @@
   "weeks": {
     "9": [
       ["FartFactory", "Armaan"],
-      ["#GETGOT", "I was Bourne Brown"],
+      ["#GETGOT", "I am the Chargers"],
       ["Nico Suave", "DQ's Brotherhood"],
       ["Bill Belichick the Coach (BBC)", "BuddyBudz"],
       ["Kappamino", "Sicario"],
@@ -15,14 +15,14 @@
       ["#GETGOT", "Armaan"],
       ["Nico Suave", "Bill Belichick the Coach (BBC)"],
       ["Kappamino", "Dose of Dev"],
-      ["I was Bourne Brown", "BuddyBudz"],
+      ["I am the Chargers", "BuddyBudz"],
       ["Drake Gaye", "DQ's Brotherhood"],
       ["Iceman", "DrSweettooth"]
     ],
     "11": [
       ["FartFactory", "Dose of Dev"],
       ["#GETGOT", "Sicario"],
-      ["Nico Suave", "I was Bourne Brown"],
+      ["Nico Suave", "I am the Chargers"],
       ["Bill Belichick the Coach (BBC)", "Drake Gaye"],
       ["Kappamino", "Iceman"],
       ["BuddyBudz", "Armaan"],
@@ -33,7 +33,7 @@
       ["#GETGOT", "Dose of Dev"],
       ["Nico Suave", "Armaan"],
       ["Bill Belichick the Coach (BBC)", "DrSweettooth"],
-      ["I was Bourne Brown", "Drake Gaye"],
+      ["I am the Chargers", "Drake Gaye"],
       ["BuddyBudz", "Sicario"],
       ["Iceman", "DQ's Brotherhood"]
     ],
@@ -42,7 +42,7 @@
       ["#GETGOT", "Kappamino"],
       ["Nico Suave", "Sicario"],
       ["Bill Belichick the Coach (BBC)", "DQ's Brotherhood"],
-      ["I was Bourne Brown", "DrSweettooth"],
+      ["I am the Chargers", "DrSweettooth"],
       ["Dose of Dev", "BuddyBudz"],
       ["Drake Gaye", "Armaan"]
     ],
@@ -51,7 +51,7 @@
       ["Nico Suave", "Dose of Dev"],
       ["Bill Belichick the Coach (BBC)", "Iceman"],
       ["Kappamino", "BuddyBudz"],
-      ["I was Bourne Brown", "DQ's Brotherhood"],
+      ["I am the Chargers", "DQ's Brotherhood"],
       ["Drake Gaye", "Sicario"],
       ["Armaan", "DrSweettooth"]
     ]
