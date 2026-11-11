@@ -12,7 +12,8 @@ import data_sources as ds
 import engine as eng
 import theme
 
-st.set_page_config(page_title="FleeceGuard", page_icon="🛡️", layout="wide")
+st.set_page_config(page_title="FleeceGuard", page_icon="🛡️", layout="wide",
+                   initial_sidebar_state="collapsed")
 st.markdown(theme.CSS, unsafe_allow_html=True)
 HERE = Path(__file__).parent
 
@@ -60,21 +61,10 @@ if dt.date.today() > C.TRADE_DEADLINE:
     st.info(f"The trade deadline ({C.TRADE_DEADLINE:%b %d}) has passed. "
             "Use this to review past trades or plan for next season.")
 
-# ---- sidebar: tunable settings --------------------------------------------------------
+# ---- settings ---------------------------------------------------------------------------
+# Fixed on purpose: thresholds live in config.py so every manager sees the same result.
+# (There used to be sliders here; anyone could move them and screenshot a different verdict.)
 S = eng.default_settings()
-with st.sidebar:
-    st.header("Settings")
-    S["fair_gap"] = st.slider("No concerns if value gap under", 0.05, 0.40, C.FAIR_GAP, 0.01)
-    S["veto_gap"] = st.slider("Second look if gap over", 0.15, 0.70, C.VETO_GAP, 0.01)
-    if S["veto_gap"] <= S["fair_gap"]:
-        S["veto_gap"] = S["fair_gap"] + 0.01
-        st.caption("Second-look threshold raised above the no-concerns threshold.")
-    S["power"] = st.slider("Star premium (1 = none)", 1.0, 2.5, C.CONSOLIDATION_POWER, 0.1)
-    S["n_sims"] = st.select_slider("Playoff simulations", [1000, 2000, 4000, 8000], C.N_SIMS)
-    if st.button("Refresh live data"):
-        st.cache_data.clear()
-        st.session_state.pop("result", None)
-        st.rerun()
 
 live = live_data()
 table = ds.build_table(rosters_raw, live, S)
@@ -166,6 +156,11 @@ with tab_teams:
 
 # ---- Data check -----------------------------------------------------------------------------
 with tab_data:
+    # Live data is cached for an hour; this forces a fresh download (e.g. after injury news)
+    if st.button("Refresh live data"):
+        st.cache_data.clear()
+        st.session_state.pop("result", None)
+        st.rerun()
     st.write(f"**Stats source:** {live['stats_source'] or 'none'} "
              f"({live['weeks_loaded']} of {live['last_week']} weeks) | "
              f"**Market values:** {live['market_source'] or 'none'} | "

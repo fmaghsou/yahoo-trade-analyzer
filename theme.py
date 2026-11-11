@@ -48,6 +48,10 @@ a:hover {{ text-decoration: underline; }}
 [data-testid="stAlert"] {{ border-radius: 10px; }}
 [data-testid="stExpander"] {{ border-radius: 10px; }}
 
+/* No side panel in this app: hide it and its toggle arrow */
+[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {{ display: none; }}
+
 /* Phones: tighter header */
 @media (max-width: 640px) {{
     .fg-header {{ padding: 14px 16px; }}
