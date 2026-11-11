@@ -3,7 +3,7 @@
 Sources (none need a login):
   - Sleeper  : player database (age, injury status) and weekly stats
   - nflverse : backup weekly stats (CSV on GitHub)
-  - FantasyCalc / Dynasty Dealer : dynasty market values (first one that answers wins)
+  - FantasyCalc : rest-of-season (redraft) player values, built from real trades
 NOTE: these endpoints could not be reached from the build environment. The app's
 'Data check' tab shows exactly what loaded, so verify it on first run.
 """
@@ -23,8 +23,11 @@ SLEEPER = "https://api.sleeper.app/v1"
 # Sleeper has two unofficial stats URLs; the second is the newer one. Both shapes are handled.
 SLEEPER_STATS = [f"{SLEEPER}/stats/nfl/regular/{{season}}/{{week}}",
                  "https://api.sleeper.com/stats/nfl/{season}/{week}?season_type=regular"]
-FANTASYCALC = "https://api.fantasycalc.com/values/current?isDynasty=true&numQbs=1&numTeams=14&ppr=1"
-DYNASTY_DEALER = "https://www.dynastydealer.com/api/player-values"
+# isDynasty=false -> redraft values: what a player is worth for the rest of THIS season.
+# (This league keeps only one rookie per team, so long-term dynasty values would be wrong.)
+FANTASYCALC = "https://api.fantasycalc.com/values/current?isDynasty=false&numQbs=1&numTeams={teams}&ppr=1"
+# Our league has 14 teams. If the site has no 14-team values, 12-team values are close enough.
+FANTASYCALC_TEAM_SIZES = (14, 12)
 NFLVERSE = ["https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{season}.csv",
             "https://github.com/nflverse/nflverse-data/releases/download/player_stats/player_stats_{season}.csv"]
 HEADERS = {"User-Agent": "FleeceGuard/2.0"}
@@ -73,6 +76,7 @@ def load_sleeper_players():
             continue
         out[str(pid)] = {"pid": str(pid), "name": name, "pos": pos, "team": p.get("team"),
                          "age": p.get("age"), "norm": normalize_name(name),
+                         "rookie": p.get("years_exp") == 0,
                          "avail": availability_key(p.get("injury_status"), p.get("status"))}
     return out, None
 
@@ -172,22 +176,36 @@ def load_stats_nflverse(season, last_week, name_index):
 
 # ------------------------------------------------------------------ market values ------
 def load_market_values():
-    data, err1 = _get(FANTASYCALC)
-    if not err1 and isinstance(data, list):
+    """Rest-of-season player values. Rescaled so the top player is 10,000, which keeps the
+    verdict thresholds meaningful even if the source changes its scale."""
+    errs = []
+    for teams in FANTASYCALC_TEAM_SIZES:
+        data, err = _get(FANTASYCALC.format(teams=teams))
+        if err or not isinstance(data, list):
+            errs.append(err or f"{teams}-team values: unexpected response")
+            continue
         vals = {}
         for it in data:
             sid = (it.get("player") or {}).get("sleeperId")
             if sid:
                 vals[str(sid)] = float(it.get("value") or 0.0)
-        if vals:
-            return vals, "FantasyCalc", None
-    data, err2 = _get(DYNASTY_DEALER)
-    if not err2 and isinstance(data, dict):
-        vals = {str(p["sleeper_id"]): float(p.get("current_value") or 0.0)
-                for p in data.get("players", []) if p.get("sleeper_id")}
-        if vals:
-            return vals, "Dynasty Dealer", None
-    return {}, None, f"FantasyCalc: {err1 or 'no usable rows'} | Dynasty Dealer: {err2 or 'no usable rows'}"
+        top = max(vals.values(), default=0.0)
+        if top > 0:
+            source = "FantasyCalc" if teams == FANTASYCALC_TEAM_SIZES[0] else \
+                f"FantasyCalc ({teams}-team values)"
+            return {pid: v * 10000.0 / top for pid, v in vals.items()}, source, None
+        errs.append(f"{teams}-team values: no usable rows")
+    return {}, None, "FantasyCalc: " + " | ".join(errs)
+
+
+def value_ranks(market, sleeper):
+    """Positional rank by player value (e.g. 'WR6'): easier to read than a raw number."""
+    by_pos = defaultdict(list)
+    for pid, v in market.items():
+        if pid in sleeper:
+            by_pos[sleeper[pid]["pos"]].append((v, pid))
+    return {pid: f"{pos}{i}" for pos, xs in by_pos.items()
+            for i, (_, pid) in enumerate(sorted(xs, reverse=True), start=1)}
 
 
 # ------------------------------------------------------------------ matching -----------
@@ -237,8 +255,9 @@ def position_ranks(ppg, sleeper):
 
 
 # ------------------------------------------------------------------ orchestration ------
-def load_live(season=C.SEASON, last_week_override=None):
-    """Everything that needs the network. Cached by the app for an hour."""
+def load_live(season=C.SEASON, last_week_override=None, completed_weeks_hint=None):
+    """Everything that needs the network. Cached by the app for an hour.
+    completed_weeks_hint: games played per the standings, used if the week lookup fails."""
     errors = []
     sleeper, err = load_sleeper_players()
     if err:
@@ -248,7 +267,8 @@ def load_live(season=C.SEASON, last_week_override=None):
         errors.append(err)
     current_week = int(state["week"]) if state and str(state.get("week", "")).isdigit() else None
     # Stats only through COMPLETED weeks (the current week may be in progress)
-    last_week = last_week_override or (max(0, min(18, current_week - 1)) if current_week else 8)
+    last_week = last_week_override or (max(0, min(18, current_week - 1)) if current_week
+                                       else (completed_weeks_hint or 8))
 
     name_index = defaultdict(list)
     for pid, p in sleeper.items():
@@ -278,6 +298,7 @@ def load_live(season=C.SEASON, last_week_override=None):
         errors.append(err)
     return {"sleeper": sleeper, "name_index": dict(name_index), "by_pos": by_pos, "ppg": ppg,
             "ranks": position_ranks(ppg, sleeper), "market": market,
+            "value_ranks": value_ranks(market, sleeper),
             "market_source": market_source, "stats_source": stats_source,
             "weeks_loaded": weeks_loaded, "last_week": last_week,
             "current_week": current_week, "errors": errors}
@@ -303,6 +324,8 @@ def build_table(rosters, live, settings):
                           "age": sp.get("age"), "avail": sp.get("avail", "Healthy"), "gp": gp,
                           "season_ppg": season_ppg, "last3_ppg": last3,
                           "rank": live["ranks"].get(pid),
+                          "value_rank": live["value_ranks"].get(pid),
+                          "rookie": bool(sp.get("rookie")),
                           "market": market.get(pid) if (pid and market) else None, "match": how})
         players[team] = plist
 

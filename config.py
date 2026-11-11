@@ -16,9 +16,17 @@ IR_SLOTS = 2
 # Statuses we treat as IR-slot eligible. ASSUMPTION: Yahoo allows "Out" in IR slots; verify.
 IR_ELIGIBLE = ("IR", "Out")
 
+# League type: redraft with ONE rookie keeper per team (keeping him costs a draft round).
+# Almost every player goes back into next year's draft, so trades are judged on
+# REST-OF-SEASON value, not long-term (dynasty) value. Keeper value is noted, never scored.
+KEEPER_RULE = "one rookie per team, at the cost of a draft round"
+
 LAST_REGULAR_SEASON_WEEK = 14
 PLAYOFF_TEAMS = 8
 TRADE_DEADLINE = dt.date(2026, 11, 28)
+# Yahoo holds a trade for 2 days of league review. A trade proposed Tuesday-Friday clears
+# before Sunday's games, so it counts for the current week; later ones count from next week.
+TRADE_COUNTS_THIS_WEEK_DAYS = (1, 2, 3, 4)   # Monday is 0
 
 # ---- League scoring (from Yahoo settings) -------------------------------------------
 SCORING = {
@@ -56,19 +64,23 @@ AVAILABILITY = {"Healthy": 1.0, "Questionable": 0.93, "Doubtful": 0.60, "Out": 0
 # Star premium: >1 rewards one star over several mid players. Kept mild (was 1.6) because the
 # market values already come from real trades, which include some of this premium.
 CONSOLIDATION_POWER = 1.3
-FAIR_GAP = 0.25             # dynasty-value gap under this = NO CONCERNS (was 0.15)
+FAIR_GAP = 0.25             # player-value gap under this = NO CONCERNS (was 0.15)
 VETO_GAP = 0.45             # over this = NEEDS A SECOND LOOK (was 0.30)
 # Swaps of two low-value players can show a big % gap on tiny numbers. Below this absolute
 # difference (in star-premium units; roughly one ~2000-value bench player) a trade is
 # always NO CONCERNS.
 MIN_ABS_GAP = 1200
-WIN_NOW_GAIN = 0.06         # if the value-loser gains this much playoff probability, soften one level
+# "Fills a need" rule: if the team giving up more value still improves its own starting lineup
+# by this many points a week (or its playoff odds by WIN_NOW_GAIN), the result is softened one
+# level. Trading from depth to fix a weak spot is a normal, healthy trade.
+LINEUP_GAIN = 2.0
+WIN_NOW_GAIN = 0.06
 
 # ---- Playoff simulation -------------------------------------------------------------
 WEEKLY_SD = 24.0            # weekly team-score volatility (assumption)
 N_SIMS = 4000
 CONTENDER_PROB = 0.60
-SELLER_PROB = 0.15
+SELLER_PROB = 0.15          # below this playoff chance a team is a "Long shot"
 
 # Name equivalences. Applied to BOTH Yahoo and feed names, so either spelling matches.
 NAME_ALIASES = {
