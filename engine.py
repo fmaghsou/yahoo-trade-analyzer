@@ -260,8 +260,41 @@ def _join(items):
 
 
 def _label(p):
-    """'Amon-Ra St. Brown (WR6 by value)', or just the name if he has no value rank."""
-    return f"{p['name']} ({p['value_rank']} by value)" if p.get("value_rank") else p["name"]
+    """'Amon-Ra St. Brown (#4 WR in trade value)', or just the name if he has no rank."""
+    vr = p.get("value_rank")
+    if not vr:
+        return p["name"]
+    pos, num = vr.rstrip("0123456789"), vr[len(vr.rstrip("0123456789")):]
+    return f"{p['name']} (#{num} {pos} in trade value)"
+
+
+def _in_short(value_even, winner, loser, n_winner_gets, d_lineup, has_stats):
+    """One plain sentence: who gets the better players, and what happens to the lineups."""
+    value_part = ("The players are worth about the same" if value_even else
+                  f"{winner} gets the more valuable {'player' if n_winner_gets == 1 else 'players'}")
+    if not has_stats:
+        return value_part + "."
+    w_up, l_up = d_lineup[winner] >= 0.5, d_lineup[loser] >= 0.5
+    w_down, l_down = d_lineup[winner] <= -0.5, d_lineup[loser] <= -0.5
+    if w_up and l_up:
+        lineup_part = "both starting lineups get better"
+    elif l_up and w_down:
+        lineup_part = f"{loser} gets the better lineup, while {winner}'s lineup gets worse"
+    elif l_up:
+        lineup_part = f"{loser} gets the better lineup"
+    elif w_up and l_down:
+        lineup_part = f"its lineup gets better too, while {loser}'s gets worse"
+    elif w_up:
+        lineup_part = "its lineup gets better too" if not value_even else f"{winner}'s lineup gets better"
+    elif w_down and l_down:
+        lineup_part = "both starting lineups get a little worse"
+    elif l_down:
+        lineup_part = f"{loser}'s lineup gets worse"
+    elif w_down:
+        lineup_part = f"{winner}'s lineup gets worse"
+    else:
+        lineup_part = "neither starting lineup changes much"
+    return f"{value_part}, and {lineup_part}."
 
 
 def _guidance(level, loser, lineup_only=None):
@@ -277,8 +310,8 @@ def _guidance(level, loser, lineup_only=None):
                  f"{gainer} gains far more this season than {other}. Before voting, ask both "
                  "managers to explain the deal."][level])
     return ["Not grounds for a veto.",
-            f"{loser} is giving up more value than it gets back, but that is not grounds for "
-            "a veto. Managers are allowed to make trades that others wouldn't.",
+            f"On paper, {loser} gives up more than it gets back. That is not grounds for a "
+            "veto. Managers are allowed to make trades that others wouldn't.",
             "Before voting, ask both managers to explain the deal. A second look is not an "
             "automatic veto."][level]
 
@@ -297,15 +330,24 @@ def even_out_hint(winner, keep_winner, diff, power):
     return f"To even it out: {winner} could add {kind}{eg}."
 
 
-def _lineup_phrase(s):
+def _lineup_phrase(s, short=False):
+    """short=True drops the words 'starting lineup' (for the second team in a sentence)."""
     d = s["lineup_delta"]
     if abs(d) < 0.5:
         move = "stays about the same"
     else:
         move = f"{'improves' if d > 0 else 'drops'} by {abs(d):.1f} points a week"
-    pre, post = f"{s['playoff_pre']:.0%}", f"{s['playoff_post']:.0%}"
-    odds = f" (playoff odds {pre} to {post})" if pre != post else ""
-    return f"{s['team']}'s starting lineup {move}{odds}"
+    odds = ""
+    if abs(s["playoff_delta"]) >= 0.03:      # skip tiny moves like 91% to 92%
+        odds = (f", and its chance of making the playoffs goes from {s['playoff_pre']:.0%} "
+                f"to {s['playoff_post']:.0%}")
+    return f"{s['team']}'s {'' if short else 'starting lineup '}{move}{odds}"
+
+
+def _lineups_text(a, b):
+    if abs(a["lineup_delta"]) < 0.5 and abs(b["lineup_delta"]) < 0.5:
+        return "Neither starting lineup changes much."
+    return f"{_lineup_phrase(a)}. {_lineup_phrase(b, short=True)}."
 
 
 def evaluate_trade(ctx, team_a, send_a, team_b, send_b):
@@ -381,9 +423,9 @@ def evaluate_trade(ctx, team_a, send_a, team_b, send_b):
         if fills_need:
             level -= 1
             res["notes"].append(
-                f"{value_loser} gives up more value on paper, but its starting lineup improves "
-                f"by {d_lineup[value_loser]:.1f} points a week, so this trade fills a need. "
-                f"That counts in its favor.")
+                f"{value_loser} gives up the more valuable side, but the trade fixes a weak "
+                f"spot in its lineup (about {d_lineup[value_loser]:.1f} more points a week). "
+                f"That is a normal, sensible trade.")
         res.update(verdict=LEVELS[level], level=level)
         if level > 0:
             keep_w = keep_a if value_winner == team_a else keep_b
@@ -425,28 +467,39 @@ def evaluate_trade(ctx, team_a, send_a, team_b, send_b):
         pass                                  # incomplete data: don't show misleading rows
     elif res["gap"] is not None:
         w, l = by_team[value_winner], by_team[value_loser]
-        gets = (f"{value_winner} gets {_join(_label(p) for p in w['receives'])}; "
-                f"{value_loser} gets {_join(_label(p) for p in l['receives'])}.")
+        w_gets, l_gets = w["receives"], l["receives"]
+        w_names, l_names = _join(_label(p) for p in w_gets), _join(_label(p) for p in l_gets)
         diff_abs = abs(net[team_a] - net[team_b])
-        if value_level > 0:
-            lead = f"{value_winner} comes out ahead by about {gap:.0%}."
-        elif diff_abs < S["min_abs_gap"] or gap < 0.10:
-            lead = "About even."                 # tiny gap, or too little value to matter
+        value_even = value_level == 0 and (diff_abs < S["min_abs_gap"] or gap < 0.10)
+        if value_even:
+            value_text = (f"The two sides are worth about the same on the trade market. "
+                          f"{value_winner} gets {w_names}. {value_loser} gets {l_names}.")
         else:
-            lead = f"{value_winner} comes out slightly ahead (about {gap:.0%})."
-        summary.append(("Player value (rest of season)", f"{lead} {gets}"))
+            size = "slightly more" if value_level == 0 else "more"
+            if len(w_gets) == 1 and len(l_gets) == 1:
+                value_text = (f"{w_names} is worth {size} on the trade market than {l_names}. "
+                              f"The gap is about {gap:.0%}. {value_winner} gets "
+                              f"{w_gets[0]['name']}.")
+            else:
+                value_text = (f"What {value_winner} gets is worth {size} on the trade market "
+                              f"than what {value_loser} gets. The gap is about {gap:.0%}. "
+                              f"{value_winner} gets {w_names}. {value_loser} gets {l_names}.")
+        summary.append(("In short", _in_short(value_even, value_winner, value_loser,
+                                               len(w_gets), d_lineup, ctx["has_stats"])))
+        summary.append(("Trade value", value_text))
     if ctx["has_stats"] and not issues:
-        summary.append(("This season's lineups",
-                        f"{_lineup_phrase(sides['a'])}. {_lineup_phrase(sides['b'])}."))
-    res["summary"] = summary
+        summary.append(("Starting lineups", _lineups_text(sides["a"], sides["b"])))
+    # Names ending in "Jr." would otherwise leave a doubled period at the end of a sentence
+    res["summary"] = [(k, v.replace("..", ".")) for k, v in summary]
 
     res["headline"] = res["verdict"] + (": each side gets something"
                                         if fills_need and res["level"] == 0 else "")
     res["guidance"] = _guidance(res["level"], value_loser, lineup_only)
     details = [f"{s['team']} must drop {_join(p['name'] for p in s['drops'])} to make room."
                for s in (sides["a"], sides["b"]) if s["drops"]]
-    res["details"] = details + res["notes"] + [f"Data issue: {i}." for i in issues]
-    res["reasons"] = [f"{k}: {v}" for k, v in summary] + res["details"]
+    res["details"] = [d.replace("..", ".") for d in
+                      details + res["notes"] + [f"Data issue: {i}." for i in issues]]
+    res["reasons"] = [f"{k}: {v}" for k, v in res["summary"]] + res["details"]
     return res
 
 
