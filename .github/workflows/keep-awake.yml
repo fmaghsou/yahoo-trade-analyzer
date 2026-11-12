@@ -1,0 +1,25 @@
+# Keeps the FleeceGuard Streamlit app from going to sleep (it sleeps after 12 hours
+# without visitors). Every 6 hours, a hidden browser opens the app and wakes it if needed.
+# To run it right away: GitHub > Actions tab > "Keep app awake" > "Run workflow".
+name: Keep app awake
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # every 6 hours, at 17 minutes past (times are UTC)
+  workflow_dispatch:          # adds the manual "Run workflow" button
+
+jobs:
+  visit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install a hidden browser
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Visit the app
+        run: python keep_awake.py
