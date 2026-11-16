@@ -251,6 +251,11 @@ def build_context(rosters, repl, standings, schedule, settings=None, has_market=
 LEVELS = ["NO CONCERNS", "ONE-SIDED, BUT ALLOWED", "NEEDS A SECOND LOOK"]
 
 
+def poss(name):
+    """Possessive of a team name: "Iceman's", but "I am the Chargers'"."""
+    return f"{name}'" if name.endswith("s") else f"{name}'s"
+
+
 def _join(items):
     """'A', 'A and B', or 'A, B, and C'."""
     items = list(items)
@@ -279,19 +284,19 @@ def _in_short(value_even, winner, loser, n_winner_gets, d_lineup, has_stats):
     if w_up and l_up:
         lineup_part = "both starting lineups get better"
     elif l_up and w_down:
-        lineup_part = f"{loser} gets the better lineup, while {winner}'s lineup gets worse"
+        lineup_part = f"{loser} gets the better lineup, while {poss(winner)} lineup gets worse"
     elif l_up:
         lineup_part = f"{loser} gets the better lineup"
     elif w_up and l_down:
-        lineup_part = f"its lineup gets better too, while {loser}'s gets worse"
+        lineup_part = f"its lineup gets better too, while {poss(loser)} gets worse"
     elif w_up:
-        lineup_part = "its lineup gets better too" if not value_even else f"{winner}'s lineup gets better"
+        lineup_part = "its lineup gets better too" if not value_even else f"{poss(winner)} lineup gets better"
     elif w_down and l_down:
         lineup_part = "both starting lineups get a little worse"
     elif l_down:
-        lineup_part = f"{loser}'s lineup gets worse"
+        lineup_part = f"{poss(loser)} lineup gets worse"
     elif w_down:
-        lineup_part = f"{winner}'s lineup gets worse"
+        lineup_part = f"{poss(winner)} lineup gets worse"
     else:
         lineup_part = "neither starting lineup changes much"
     return f"{value_part}, and {lineup_part}."
@@ -341,7 +346,7 @@ def _lineup_phrase(s, short=False):
     if abs(s["playoff_delta"]) >= 0.03:      # skip tiny moves like 91% to 92%
         odds = (f", and its chance of making the playoffs goes from {s['playoff_pre']:.0%} "
                 f"to {s['playoff_post']:.0%}")
-    return f"{s['team']}'s {'' if short else 'starting lineup '}{move}{odds}"
+    return f"{poss(s['team'])} {'' if short else 'starting lineup '}{move}{odds}"
 
 
 def _lineups_text(a, b):

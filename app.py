@@ -11,6 +11,7 @@ import backtest as bt
 import config as C
 import data_sources as ds
 import engine as eng
+import suggest as sg
 import theme
 
 st.set_page_config(page_title="FleeceGuard", page_icon="🛡️", layout="wide",
@@ -103,8 +104,22 @@ if ctx["value_source"] == "estimate":
 elif not live["stats_source"] or not has_market:
     st.warning("Some live data failed to load, so results are less reliable. See the Data check tab.")
 
-tab_trade, tab_back, tab_teams, tab_data = st.tabs(
-    ["Trade analyzer", "Backtest", "Teams & playoff odds", "Data check"])
+tab_trade, tab_ideas, tab_back, tab_teams, tab_data = st.tabs(
+    ["Trade analyzer", "Trade ideas", "Backtest", "Teams & playoff odds", "Data check"])
+
+SETTINGS_KEY = json.dumps(S, sort_keys=True)
+
+
+def load_into_analyzer(team, partner, give, get, res):
+    """Button callback: fill the Trade analyzer with a suggested trade and its result.
+    Runs before the page redraws, which is the only time widget values can be set.
+    Widget keys include the team name, so switching teams never leaves stale picks."""
+    st.session_state["ta"] = team
+    st.session_state[f"tb::{team}"] = partner
+    st.session_state[f"send_a::{team}"] = list(give)
+    st.session_state[f"send_b::{partner}"] = list(get)
+    st.session_state["result"] = ((team, partner, tuple(give), tuple(get), SETTINGS_KEY), res)
+    st.session_state["loaded_msg"] = f"{', '.join(give)} for {', '.join(get)}"
 
 
 def player_rows(players):
@@ -121,13 +136,19 @@ def player_rows(players):
 with tab_trade:
     teams = list(rosters_raw)
     c1, c2 = st.columns(2)
-    ta = c1.selectbox("Proposing team", teams, index=0)
-    tb = c2.selectbox("Receiving team", [t for t in teams if t != ta], index=0)
+    if st.session_state.get("loaded_msg"):
+        st.info(f"Loaded from Trade ideas: {st.session_state.pop('loaded_msg')}")
+    # Keys let the Trade ideas tab fill these in. Only pass a default when the key has no
+    # value yet; passing both makes Streamlit show a warning.
+    first = lambda k: {} if k in st.session_state else {"index": 0}  # noqa: E731
+    ta = c1.selectbox("Proposing team", teams, key="ta", **first("ta"))
+    tb_key = f"tb::{ta}"
+    tb = c2.selectbox("Receiving team", [t for t in teams if t != ta], key=tb_key, **first(tb_key))
     names = lambda t: [p["name"] for p in ctx["rosters"][t]]  # noqa: E731
     s1, s2 = st.columns(2)
-    send_a = s1.multiselect(f"{ta} sends", names(ta))
-    send_b = s2.multiselect(f"{tb} sends", names(tb))
-    key = (ta, tb, tuple(send_a), tuple(send_b), json.dumps(S, sort_keys=True))
+    send_a = s1.multiselect(f"{ta} sends", names(ta), key=f"send_a::{ta}")
+    send_b = s2.multiselect(f"{tb} sends", names(tb), key=f"send_b::{tb}")
+    key = (ta, tb, tuple(send_a), tuple(send_b), SETTINGS_KEY)
 
     if st.button("Run analysis", type="primary"):
         if not send_a or not send_b:
@@ -160,6 +181,44 @@ with tab_trade:
         st.subheader("Players in the deal")
         st.dataframe(player_rows(res["sides"]["a"]["sends"] + res["sides"]["b"]["sends"]))
         st.text_area("Copy for WhatsApp", eng.whatsapp_text(res), height=200)
+
+# ---- Trade ideas ------------------------------------------------------------------------
+with tab_ideas:
+    st.write("Pick your team to get up to 3 trade ideas that improve your starting lineup. "
+             "Every idea is a fair offer: it's checked by FleeceGuard and shown only if the "
+             "result is NO CONCERNS. The other team doesn't always come out ahead, but its "
+             "lineup never drops by more than 2 points a week.")
+    me = st.selectbox("Your team", list(rosters_raw), key="ideas_team")
+    if st.button("Find trade ideas", type="primary"):
+        with st.spinner("Checking every possible swap..."):
+            st.session_state["ideas"] = ((me, SETTINGS_KEY), sg.find_trade_ideas(ctx, me))
+
+    saved = st.session_state.get("ideas")
+    if saved and saved[0] == (me, SETTINGS_KEY):
+        out = saved[1]
+        if out["weak"]:
+            spots = "; ".join(f"{sg.slot_label(slot)} ({mine:.1f} points a week vs. a league "
+                              f"average of {avg:.1f})" for slot, mine, avg in out["weak"])
+            st.markdown(f"**Your weakest spots:** {spots}.")
+        else:
+            st.markdown("**Your weakest spots:** none. Every starting spot is at or above "
+                        "the league average.")
+        if out["note"]:
+            st.info(out["note"])
+        for i, idea in enumerate(out["ideas"], start=1):
+            with st.container(border=True):
+                st.markdown(f"**Idea {i}: trade with {idea['partner']}**")
+                st.markdown(f"- **You give:** {', '.join(idea['give'])}\n"
+                            f"- **You get:** {', '.join(idea['get'])}")
+                st.write(idea["why"])
+                st.caption(f"FleeceGuard: {idea['result']['headline']}")
+                st.button("Analyze this trade", key=f"idea_{i}",
+                          on_click=load_into_analyzer,
+                          args=(me, idea["partner"], idea["give"], idea["get"], idea["result"]))
+        if out["ideas"]:
+            st.caption("Clicking Analyze fills in the Trade analyzer tab. Open it for the full "
+                       "breakdown and the WhatsApp text. Ideas assume today's rosters, so they "
+                       "can't account for what another manager is willing to give up.")
 
 # ---- Backtest ----------------------------------------------------------------------------
 with tab_back:
@@ -196,6 +255,7 @@ with tab_data:
     if st.button("Refresh live data"):
         st.cache_data.clear()
         st.session_state.pop("result", None)
+        st.session_state.pop("ideas", None)
         st.rerun()
     st.write(f"**Stats source:** {live['stats_source'] or 'none'} "
              f"({live['weeks_loaded']} of {live['last_week']} weeks) | "
