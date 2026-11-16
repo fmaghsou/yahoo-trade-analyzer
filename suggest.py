@@ -38,16 +38,47 @@ def lineup_slots(roster, repl):
     return slots
 
 
-def weak_spots(ctx, team, n=2):
-    """The team's starting slots furthest below the league average, as (slot, mine, avg)."""
+def _slot_gaps(ctx, team):
+    """Each starting slot as (slot, team's points, league average, difference)."""
     all_slots = {t: lineup_slots(r, ctx["repl"]) for t, r in ctx["rosters"].items()}
-    mine = all_slots[team]
     out = []
-    for slot, v in mine.items():
+    for slot, v in all_slots[team].items():
         avg = sum(s[slot] for s in all_slots.values()) / len(all_slots)
-        if avg - v >= 1.0:                   # ignore gaps too small to matter
-            out.append((slot, v, avg))
-    return sorted(out, key=lambda x: x[1] - x[2])[:n]
+        out.append((slot, v, avg, v - avg))
+    return out
+
+
+def weak_spots(ctx, team, n=2):
+    """Starting slots furthest BELOW the league average, as (slot, mine, avg)."""
+    gaps = [g for g in _slot_gaps(ctx, team) if g[3] <= -1.0]   # ignore tiny gaps
+    return [g[:3] for g in sorted(gaps, key=lambda g: g[3])[:n]]
+
+
+def strong_spots(ctx, team, n=2):
+    """Starting slots furthest ABOVE the league average, as (slot, mine, avg)."""
+    gaps = [g for g in _slot_gaps(ctx, team) if g[3] >= 1.0]
+    return [g[:3] for g in sorted(gaps, key=lambda g: -g[3])[:n]]
+
+
+def trade_bait(ctx, team, n=3):
+    """Bench players other teams would start: the team's best trading chips.
+    Returns (player name, position, how many other teams he'd start for)."""
+    repl, roster = ctx["repl"], ctx["rosters"][team]
+    starters = eng.lineup_starters(roster, repl)
+    out = []
+    for p in roster:
+        if id(p) in starters or p.get("avail") in C.IR_ELIGIBLE:
+            continue
+        would_start = 0
+        for other, r in ctx["rosters"].items():
+            if other == team:
+                continue
+            # He "would start" there if adding him lifts their lineup by half a point or more
+            if eng.lineup_ppg(r + [p], repl) - ctx["lineups"][other] >= 0.5:
+                would_start += 1
+        if would_start:
+            out.append((p["name"], p["pos"], would_start))
+    return sorted(out, key=lambda x: -x[2])[:n]
 
 
 def _tradeable(p, has_market):
@@ -66,7 +97,7 @@ def _groups(players):
 def find_trade_ideas(ctx, team, n=3):
     """Returns {"weak": [...], "ideas": [...], "note": str or None}."""
     if not ctx["has_stats"]:
-        return {"weak": [], "ideas": [],
+        return {"weak": [], "strong": [], "bait": [], "ideas": [],
                 "note": "Live stats aren't loaded, so trade ideas can't be calculated. "
                         "Check the Data check tab."}
     S, repl = ctx["settings"], ctx["repl"]
@@ -134,7 +165,8 @@ def find_trade_ideas(ctx, team, n=3):
         note = ("No fair trades found that improve your lineup right now. That usually "
                 "means your lineup has no obvious hole, or the players who would help you "
                 "are worth more than what you could offer.")
-    return {"weak": weak_spots(ctx, team), "ideas": ideas, "note": note}
+    return {"weak": weak_spots(ctx, team), "strong": strong_spots(ctx, team),
+            "bait": trade_bait(ctx, team), "ideas": ideas, "note": note}
 
 
 def _why(team, other, give, get, me, them):

@@ -184,10 +184,8 @@ with tab_trade:
 
 # ---- Trade ideas ------------------------------------------------------------------------
 with tab_ideas:
-    st.write("Pick your team to get up to 3 trade ideas that improve your starting lineup. "
-             "Every idea is a fair offer: it's checked by FleeceGuard and shown only if the "
-             "result is NO CONCERNS. The other team doesn't always come out ahead, but its "
-             "lineup never drops by more than 2 points a week.")
+    st.write("Pick your team to see its strengths and weak spots, and up to 3 trade ideas "
+             "that improve your starting lineup.")
     me = st.selectbox("Your team", list(rosters_raw), key="ideas_team")
     if st.button("Find trade ideas", type="primary"):
         with st.spinner("Checking every possible swap..."):
@@ -196,13 +194,22 @@ with tab_ideas:
     saved = st.session_state.get("ideas")
     if saved and saved[0] == (me, SETTINGS_KEY):
         out = saved[1]
-        if out["weak"]:
-            spots = "; ".join(f"{sg.slot_label(slot)} ({mine:.1f} points a week vs. a league "
-                              f"average of {avg:.1f})" for slot, mine, avg in out["weak"])
-            st.markdown(f"**Your weakest spots:** {spots}.")
-        else:
-            st.markdown("**Your weakest spots:** none. Every starting spot is at or above "
-                        "the league average.")
+        # Roster snapshot: each starting spot compared with the same spot on every team
+        spot = lambda slot, mine, avg: (f"{sg.slot_label(slot).capitalize()}: {mine:.1f} points a week "  # noqa: E731
+                                        f"(league average {avg:.1f})")
+        c_weak, c_strong = st.columns(2)
+        with c_weak:
+            st.markdown("**Weak spots**")
+            st.markdown("\n".join(f"- {spot(*w)}" for w in out["weak"]) if out["weak"]
+                        else "- None. Every starting spot is at or above the league average.")
+        with c_strong:
+            st.markdown("**Strengths**")
+            st.markdown("\n".join(f"- {spot(*g)}" for g in out["strong"]) if out["strong"]
+                        else "- No starting spot stands out above the league average.")
+        if out["bait"]:
+            chips = "; ".join(f"{name} ({pos}, would start for {k} "
+                              f"{'team' if k == 1 else 'teams'})" for name, pos, k in out["bait"])
+            st.markdown(f"**Best trading chips on your bench:** {chips}.")
         if out["note"]:
             st.info(out["note"])
         for i, idea in enumerate(out["ideas"], start=1):
