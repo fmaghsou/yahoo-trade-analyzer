@@ -27,6 +27,12 @@
      "team_b": "Dose of Dev", "b_receives": ["Ja'Marr Chase", "Brian Thomas Jr."]},
     {"id": 9, "date": "Nov 4", "outcome": "Vetoed",
      "team_a": "#GETGOT", "a_receives": ["Kenneth Walker III"],
-     "team_b": "Drake Gaye", "b_receives": ["Tyler Allgeier", "Wan'Dale Robinson", "Breece Hall"]}
+     "team_b": "Drake Gaye", "b_receives": ["Tyler Allgeier", "Wan'Dale Robinson", "Breece Hall"]},
+    {"id": 10, "date": "Nov 14", "outcome": "Passed",
+     "team_a": "#GETGOT", "a_receives": ["Patrick Mahomes"],
+     "team_b": "Nico Suave", "b_receives": ["Wan'Dale Robinson"]},
+    {"id": 11, "date": "Nov 15", "outcome": "Passed",
+     "team_a": "Bill Belichick the Coach (BBC)", "a_receives": ["Ja'Marr Chase"],
+     "team_b": "Dose of Dev", "b_receives": ["Derrick Henry", "Tetairoa McMillan"]}
   ]
 }
