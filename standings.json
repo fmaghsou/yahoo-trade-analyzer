@@ -1,19 +1,19 @@
 {
-  "_note": "Standings after Week 10 (Yahoo, last update Thu Nov 19, 2026 03:02am EST). PF = points for, PA = points against. BuddyBudz has clinched a playoff spot.",
+  "_note": "Standings after Week 11 (Yahoo, last update Wed Nov 25, 2026 02:58am EST). PF = points for, PA = points against. BuddyBudz has clinched a playoff spot.",
   "teams": [
-    {"team": "BuddyBudz", "w": 9, "l": 1, "t": 0, "pf": 1494.53, "pa": 1192.14},
-    {"team": "DQ's Brotherhood", "w": 7, "l": 3, "t": 0, "pf": 1462.65, "pa": 1341.98},
-    {"team": "#GETGOT", "w": 7, "l": 3, "t": 0, "pf": 1286.64, "pa": 1223.85},
-    {"team": "FartFactory", "w": 6, "l": 4, "t": 0, "pf": 1663.66, "pa": 1330.7},
-    {"team": "Sicario", "w": 6, "l": 4, "t": 0, "pf": 1500.65, "pa": 1460.96},
-    {"team": "Bill Belichick the Coach (BBC)", "w": 6, "l": 4, "t": 0, "pf": 1438.03, "pa": 1221.96},
-    {"team": "Armaan", "w": 6, "l": 4, "t": 0, "pf": 1276.8, "pa": 1310.26},
-    {"team": "Dose of Dev", "w": 5, "l": 5, "t": 0, "pf": 1393.37, "pa": 1280.13},
-    {"team": "DrSweettooth", "w": 4, "l": 6, "t": 0, "pf": 1395.86, "pa": 1468.93},
-    {"team": "Iceman", "w": 4, "l": 6, "t": 0, "pf": 1367.85, "pa": 1340.99},
-    {"team": "Drake Gaye", "w": 4, "l": 6, "t": 0, "pf": 1297.77, "pa": 1457.7},
-    {"team": "Kappamino", "w": 3, "l": 7, "t": 0, "pf": 1284.78, "pa": 1435.74},
-    {"team": "Nico Suave", "w": 3, "l": 7, "t": 0, "pf": 1072.43, "pa": 1377.84},
-    {"team": "I am the Chargers", "w": 0, "l": 10, "t": 0, "pf": 1068.33, "pa": 1560.17}
+    {"team": "BuddyBudz", "w": 10, "l": 1, "t": 0, "pf": 1662.63, "pa": 1303.95},
+    {"team": "DQ's Brotherhood", "w": 8, "l": 3, "t": 0, "pf": 1662.46, "pa": 1447.85},
+    {"team": "#GETGOT", "w": 8, "l": 3, "t": 0, "pf": 1465.95, "pa": 1342.45},
+    {"team": "Bill Belichick the Coach (BBC)", "w": 7, "l": 4, "t": 0, "pf": 1542.34, "pa": 1318.71},
+    {"team": "FartFactory", "w": 6, "l": 5, "t": 0, "pf": 1808.31, "pa": 1480.95},
+    {"team": "Sicario", "w": 6, "l": 5, "t": 0, "pf": 1619.25, "pa": 1640.27},
+    {"team": "Dose of Dev", "w": 6, "l": 5, "t": 0, "pf": 1543.62, "pa": 1424.78},
+    {"team": "Armaan", "w": 6, "l": 5, "t": 0, "pf": 1388.61, "pa": 1478.36},
+    {"team": "Iceman", "w": 5, "l": 6, "t": 0, "pf": 1493.81, "pa": 1449.03},
+    {"team": "DrSweettooth", "w": 4, "l": 7, "t": 0, "pf": 1501.73, "pa": 1668.74},
+    {"team": "Drake Gaye", "w": 4, "l": 7, "t": 0, "pf": 1394.52, "pa": 1562.01},
+    {"team": "Kappamino", "w": 3, "l": 8, "t": 0, "pf": 1392.82, "pa": 1561.70},
+    {"team": "Nico Suave", "w": 3, "l": 8, "t": 0, "pf": 1154.27, "pa": 1470.92},
+    {"team": "I am the Chargers", "w": 1, "l": 10, "t": 0, "pf": 1161.41, "pa": 1642.01}
   ]
 }

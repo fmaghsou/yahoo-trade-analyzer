@@ -7,12 +7,11 @@
     {"name": "Breece Hall", "pos": "RB"},
     {"name": "Carnell Tate", "pos": "WR"},
     {"name": "Tank Dell", "pos": "WR"},
-    {"name": "Terrance Ferguson", "pos": "TE"},
     {"name": "J. Croskey-Merritt", "pos": "RB"},
     {"name": "Patrick Mahomes", "pos": "QB"},
     {"name": "Dylan Sampson", "pos": "RB"},
-    {"name": "Seth McGowan", "pos": "RB"},
-    {"name": "Xavier Hutchinson", "pos": "WR"}
+    {"name": "Omar Cooper Jr.", "pos": "WR"},
+    {"name": "Ted Hurst III", "pos": "WR"}
   ],
   "Nico Suave": [
     {"name": "Trevor Lawrence", "pos": "QB"},
@@ -42,14 +41,12 @@
     {"name": "Ja'Marr Chase", "pos": "WR"},
     {"name": "Romeo Doubs", "pos": "WR"},
     {"name": "Tyreek Hill", "pos": "WR"},
-    {"name": "Dalton Schultz", "pos": "TE"},
-    {"name": "Tyjae Spears", "pos": "RB"}
+    {"name": "Brandon Aiyuk", "pos": "WR"}
   ],
   "Kappamino": [
     {"name": "Caleb Williams", "pos": "QB"},
     {"name": "Kyren Williams", "pos": "RB"},
     {"name": "Quinshon Judkins", "pos": "RB"},
-    {"name": "Puka Nacua", "pos": "WR"},
     {"name": "Jameson Williams", "pos": "WR"},
     {"name": "Colston Loveland", "pos": "TE"},
     {"name": "Ryan Flournoy", "pos": "WR"},
@@ -59,7 +56,7 @@
     {"name": "Emari Demercado", "pos": "RB"},
     {"name": "Samaje Perine", "pos": "RB"},
     {"name": "Chig Okonkwo", "pos": "TE"},
-    {"name": "Elic Ayomanor", "pos": "WR"}
+    {"name": "Jack Bech", "pos": "WR"}
   ],
   "I am the Chargers": [
     {"name": "Tyler Shough", "pos": "QB"},
@@ -67,12 +64,12 @@
     {"name": "Zay Flowers", "pos": "WR"},
     {"name": "Caleb Douglas", "pos": "WR"},
     {"name": "Jordan Addison", "pos": "WR"},
-    {"name": "DJ Moore", "pos": "WR"},
     {"name": "Kenny Gainwell", "pos": "RB"},
     {"name": "Rico Dowdle", "pos": "RB"},
     {"name": "Michael Mayer", "pos": "TE"},
     {"name": "Pat Freiermuth", "pos": "TE"},
-    {"name": "Devaughn Vele", "pos": "WR"}
+    {"name": "Devaughn Vele", "pos": "WR"},
+    {"name": "Saquon Barkley", "pos": "RB"}
   ],
   "Dose of Dev": [
     {"name": "Brock Purdy", "pos": "QB"},
@@ -82,7 +79,6 @@
     {"name": "Juwan Johnson", "pos": "TE"},
     {"name": "Rashee Rice", "pos": "WR"},
     {"name": "Antonio Williams", "pos": "WR"},
-    {"name": "Keaton Mitchell", "pos": "RB"},
     {"name": "Brian Thomas Jr.", "pos": "WR"},
     {"name": "RJ Harvey", "pos": "RB"},
     {"name": "Derrick Henry", "pos": "RB"},
@@ -96,12 +92,12 @@
     {"name": "Brenton Strange", "pos": "TE"},
     {"name": "Marvin Harrison Jr.", "pos": "WR"},
     {"name": "Jordan Love", "pos": "QB"},
-    {"name": "Bam Knight", "pos": "RB"},
     {"name": "A.J. Brown", "pos": "WR"},
     {"name": "Pat Bryant", "pos": "WR"},
-    {"name": "Ashton Dulin", "pos": "WR"},
-    {"name": "Xavier Worthy", "pos": "WR"},
-    {"name": "Bo Nix", "pos": "QB"}
+    {"name": "Chimere Dike", "pos": "WR"},
+    {"name": "Michael Pittman Jr.", "pos": "WR"},
+    {"name": "Ty Johnson", "pos": "RB"},
+    {"name": "Corey Kiner", "pos": "RB"}
   ],
   "BuddyBudz": [
     {"name": "Joe Burrow", "pos": "QB"},
@@ -111,12 +107,12 @@
     {"name": "Ladd McConkey", "pos": "WR"},
     {"name": "Dalton Kincaid", "pos": "TE"},
     {"name": "KC Concepcion Jr.", "pos": "WR"},
-    {"name": "Keenan Allen", "pos": "WR"},
     {"name": "Tre Tucker", "pos": "WR"},
     {"name": "David Montgomery", "pos": "RB"},
     {"name": "De'Zhaun Stribling", "pos": "WR"},
-    {"name": "Tre' Harris", "pos": "WR"},
-    {"name": "Adonai Mitchell", "pos": "WR"}
+    {"name": "Adonai Mitchell", "pos": "WR"},
+    {"name": "Darren Waller", "pos": "TE"},
+    {"name": "Konata Mumpfield", "pos": "WR"}
   ],
   "FartFactory": [
     {"name": "Dak Prescott", "pos": "QB"},
@@ -129,10 +125,7 @@
     {"name": "Isaiah Likely", "pos": "TE"},
     {"name": "DeMario Douglas", "pos": "WR"},
     {"name": "Jaylen Warren", "pos": "RB"},
-    {"name": "J.J. McCarthy", "pos": "QB"},
-    {"name": "Roman Wilson", "pos": "WR"},
-    {"name": "Alec Pierce", "pos": "WR"},
-    {"name": "Treylon Burks", "pos": "WR"}
+    {"name": "Roman Wilson", "pos": "WR"}
   ],
   "Armaan": [
     {"name": "Josh Allen", "pos": "QB"},
@@ -144,7 +137,6 @@
     {"name": "Hunter Henry", "pos": "TE"},
     {"name": "Khalil Shakir", "pos": "WR"},
     {"name": "Mike Evans", "pos": "WR"},
-    {"name": "Kaelon Black", "pos": "RB"},
     {"name": "Kyle Monangai", "pos": "RB"},
     {"name": "Courtland Sutton", "pos": "WR"},
     {"name": "Jordyn Tyson", "pos": "WR"}
@@ -167,7 +159,6 @@
   "Iceman": [
     {"name": "Jared Goff", "pos": "QB"},
     {"name": "Bucky Irving", "pos": "RB"},
-    {"name": "Saquon Barkley", "pos": "RB"},
     {"name": "Drake London", "pos": "WR"},
     {"name": "Jalen Coker", "pos": "WR"},
     {"name": "Garrett Wilson", "pos": "WR"},
@@ -177,7 +168,8 @@
     {"name": "Tony Pollard", "pos": "RB"},
     {"name": "Davante Adams", "pos": "WR"},
     {"name": "Laquon Treadwell", "pos": "WR"},
-    {"name": "Mark Andrews", "pos": "TE"}
+    {"name": "Mark Andrews", "pos": "TE"},
+    {"name": "DJ Moore", "pos": "WR"}
   ],
   "DrSweettooth": [
     {"name": "Jonathan Taylor", "pos": "RB"},
@@ -204,6 +196,7 @@
     {"name": "Quentin Johnston", "pos": "WR"},
     {"name": "Jordan Mason", "pos": "RB"},
     {"name": "Deebo Samuel Sr.", "pos": "WR"},
-    {"name": "Kaleb Johnson", "pos": "RB"}
+    {"name": "Jonathon Brooks", "pos": "RB"},
+    {"name": "Chris Rodriguez Jr.", "pos": "RB"}
   ]
 }

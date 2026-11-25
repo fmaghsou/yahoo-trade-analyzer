@@ -33,6 +33,9 @@
      "team_b": "Nico Suave", "b_receives": ["Wan'Dale Robinson"]},
     {"id": 11, "date": "Nov 15", "outcome": "Passed",
      "team_a": "Bill Belichick the Coach (BBC)", "a_receives": ["Ja'Marr Chase"],
-     "team_b": "Dose of Dev", "b_receives": ["Derrick Henry", "Tetairoa McMillan"]}
+     "team_b": "Dose of Dev", "b_receives": ["Derrick Henry", "Tetairoa McMillan"]},
+    {"id": 12, "date": "Nov 20", "outcome": "Passed",
+     "team_a": "I am the Chargers", "a_receives": ["Saquon Barkley"],
+     "team_b": "Iceman", "b_receives": ["DJ Moore"]}
   ]
 }
