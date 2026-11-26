@@ -13,6 +13,7 @@ import data_sources as ds
 import engine as eng
 import suggest as sg
 import theme
+import yahoo as yh
 
 st.set_page_config(page_title="FleeceGuard", page_icon="🛡️", layout="wide",
                    initial_sidebar_state="collapsed")
@@ -31,12 +32,50 @@ def live_data(completed_weeks):
     return ds.load_live(completed_weeks_hint=completed_weeks)
 
 
-rosters_raw = read_json("rosters.json")
-standings_raw = read_json("standings.json")
-schedule_raw = read_json("schedule.json")
-if not (rosters_raw and standings_raw and schedule_raw):
-    st.error("Missing rosters.json, standings.json, or schedule.json in the repo.")
-    st.stop()
+def yahoo_config():
+    """The [yahoo] block from Streamlit Secrets, or None if it isn't set up."""
+    try:
+        cfg = st.secrets.get("yahoo")
+    except Exception:          # no secrets at all (e.g. running on a laptop)
+        return None
+    return dict(cfg) if cfg else None
+
+
+@st.cache_data(ttl=900, show_spinner="Loading the league from Yahoo...")
+def yahoo_league():
+    """Live league data, cached 15 minutes. Failures are returned (not raised) so they are
+    cached too: a Yahoo outage shouldn't slow down every click."""
+    cfg = yahoo_config()
+    if not cfg:
+        return {"configured": False, "error": None}
+    try:
+        return {"configured": True, "error": None, **yh.fetch_league(cfg)}
+    except yh.YahooError as e:
+        return {"configured": True, "error": str(e)}
+    except Exception as e:     # unexpected response shape: fall back instead of crashing
+        return {"configured": True, "error": f"Unexpected Yahoo response ({type(e).__name__}: {e})"}
+
+
+# League data: live from Yahoo when it loads and checks out, otherwise the backup JSON files.
+file_rosters = read_json("rosters.json")
+file_standings = read_json("standings.json")
+file_schedule = read_json("schedule.json")
+yl = yahoo_league()
+yahoo_problems = []
+if yl.get("rosters"):
+    yahoo_problems = eng.validate_league(yl["rosters"], {t["team"]: t for t in yl["standings"]["teams"]},
+                                         yl["schedule"]["weeks"])
+use_yahoo = bool(yl.get("rosters")) and not yahoo_problems
+if use_yahoo:
+    rosters_raw, standings_raw, schedule_raw = yl["rosters"], yl["standings"], yl["schedule"]
+    league_source = f"Live from Yahoo, updated {yl['fetched_at']}"
+else:
+    rosters_raw, standings_raw, schedule_raw = file_rosters, file_standings, file_schedule
+    league_source = "Backup files (screenshots)"
+    if not (rosters_raw and standings_raw and schedule_raw):
+        st.error("Yahoo isn't available and rosters.json, standings.json, or schedule.json "
+                 "is missing from the repo.")
+        st.stop()
 
 standings = {t["team"]: t for t in standings_raw["teams"]}
 schedule = schedule_raw["weeks"]
@@ -50,6 +89,10 @@ if problems:
 st.markdown(theme.header_html(C.LEAGUE_NAME, C.SEASON), unsafe_allow_html=True)
 st.caption("Trade checker: rest-of-season player value + lineup impact + playoff odds. "
            "A reference for the league vote, not a replacement for it.")
+st.caption(f"League data: {league_source}")
+if yl["configured"] and not use_yahoo:
+    st.warning("Couldn't load the league from Yahoo, so rosters and standings come from the "
+               "backup files and may be out of date. See the Data check tab.")
 with st.expander("What the results mean"):
     st.write(f"- **NO CONCERNS**: the value gap is under {C.FAIR_GAP:.0%}, or too small to "
              "matter. Not grounds for a veto.\n"
@@ -264,6 +307,23 @@ with tab_data:
         st.session_state.pop("result", None)
         st.session_state.pop("ideas", None)
         st.rerun()
+    # Where rosters, standings, and the schedule came from
+    st.write(f"**League data:** {league_source}")
+    if yl.get("error"):
+        st.error(f"Yahoo: {yl['error']}")
+    elif not yl["configured"]:
+        st.caption("Yahoo isn't set up in Streamlit Secrets, so the backup files are used.")
+    if yahoo_problems:
+        st.error("Yahoo data loaded but didn't line up, so the backup files are used:")
+        for p in yahoo_problems:
+            st.write("- " + p)
+    if yl.get("rosters") and file_rosters:
+        diff = yh.roster_diff(yl["rosters"], file_rosters)
+        with st.expander(f"Yahoo vs backup files: {len(diff)} teams differ"):
+            st.caption("Expected to grow between screenshot updates. The app uses Yahoo "
+                       "whenever it loads.")
+            if diff:
+                st.dataframe(diff)
     st.write(f"**Stats source:** {live['stats_source'] or 'none'} "
              f"({live['weeks_loaded']} of {live['last_week']} weeks) | "
              f"**Player values:** {value_label} | "
